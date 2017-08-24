@@ -1,87 +1,105 @@
-.day-data {
+.day-data-wrapper {
     background-color: #cff;
-    width: 100%;
+    min-height: 160px;
     flex: 1;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #000;
+}
+
+.day-data {
+    width: 95%;
+    margin: auto;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    padding-top: 10px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #000;
-  }
-  
-  .day-date {
-    font-size: 40px;
-    order: 1;
-  }
-  
-  .day-icon {
-    display: block;
-    order: 3;
-  }
-  
-  .day-icon .wx-icon {
-    width: 100px;
-    height: 100px;
-  }
-  
-  .day-other {
+}
+
+.day-date {
+    font-size: 30px;
     order: 2;
+    margin-right: 20px;
+}
+
+.day-icon {
     display: block;
-  }
-  
-  .day-sub-div {
+    order: 1;
+    margin-right: auto;
+    margin-left: 20px;
+}
+
+.day-icon .wx-icon {
+    width: 75px;
+    height: 75px;
+}
+
+.day-other {
+    order: 3;
+    display: block;
+    margin: auto;
+}
+
+.day-sub-div {
     display: inline-block;
-    margin-left: 5px;
-    margin-right: 5px;
-  }
-  
-  .day-sub-div.wx_icon {
+    width: 130px;
+}
+
+.day-sub-div.wx_icon {
     margin: 0;
-  }
-  
-  .day-temp {
-    font-size: 32px;
-  }
-  
-  .day-temp {
+}
+
+.day-temp {
+    font-size: 25px;
+}
+
+.day-temp {
     color: #a00;
-  }
-  
-  .day-other-data {
-    font-size: 32px;
+}
+
+.day-other-data {
+    font-size: 25px;
     font-weight: 600;
-  }
-  
-  .day-precip {
+}
+
+.day-precip {
     color: #00a;
-  }
-  
-  @media screen and (min-width: 721px) {
+}
+
+@media screen and (min-width: 721px) {
     .day-data {
-      max-width: 150px;
-      display: block;
+        max-width: 150px;
+        min-height: 100px;
+        display: block;
     }
+
     .day-date {
-      font-size: 20px;
+        font-size: 20px;
+        margin-right: 0;
     }
+
     .day-icon {
-      order: 2;
+        order: 2;
     }
+
     .day-icon .wx-icon {
-      width: 50px;
-      height: 50px;
+        width: 50px;
+        height: 50px;
     }
+
     .day-other {
-      order: 3;
+        order: 3;
+        text-align: center;
     }
+
     .day-temp {
-      font-size: 16px;
+        font-size: 16px;
     }
+
+
     .day-other-data {
-      font-size: 20px;
+        font-size: 20px;
     }
-  }
+}
   

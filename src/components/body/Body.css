@@ -1,6 +1,11 @@
 #body {
-  background-color: #afa;
-  flex: 5;
-  min-height: 90vh;
-  overflow-x: hidden;
+    background-color: #afa;
+    flex: 5;
+    overflow-x: hidden;
+}
+
+@media screen and (min-width: 721px) {
+    #body {
+        max-height: 680px;
+    }
 }
