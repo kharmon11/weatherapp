@@ -1,0 +1,42 @@
+.image-link {
+    border: 0;
+}
+
+#header {
+    background: #afa;
+    display: flex;
+    flex-direction: column;
+    height: 90vh;
+    width: 100%;
+    flex-grow: 4;
+}
+
+#header_info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#header_title {
+    color: #aaf;
+    background: #afa;
+    background: radial-gradient(#fff, #ddf, #afa);
+    font-size: 20px;
+}
+
+#app_form_div {
+    max-width: 700px;
+    margin: auto;
+    display: flex;
+}
+
+#darksky_img {
+    height: 30px;
+    flex: 1;
+}
+
+@media screen and (min-width: 883px) {
+    #header_title {
+        font-size: 40px;
+    }
+}

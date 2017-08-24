@@ -1,0 +1,9 @@
+.wx-icon {
+    height: 50px;
+    width: 50px;
+  }
+  
+  #wx_icon_current {
+    flex: 1;
+  }
+  

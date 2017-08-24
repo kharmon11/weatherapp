@@ -1,0 +1,13 @@
+.footer-section {
+    flex: 1;
+}
+
+#footer {
+    background-color: #aaf;
+    display: flex;
+    align-items: center;
+}
+
+#footer_link {
+    border: 0;
+}

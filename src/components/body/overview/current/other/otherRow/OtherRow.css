@@ -1,0 +1,11 @@
+.other-row {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    flex-wrap: nowrap;
+  }
+  
+  .other-row-cell {
+    flex: 1;
+  }
+  

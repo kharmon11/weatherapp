@@ -278,3 +278,4 @@ ENV/
 # Rope project settings
 .ropeproject
 
+/instance/config.py

@@ -1,0 +1,87 @@
+.day-data {
+    background-color: #cff;
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding-top: 10px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #000;
+  }
+  
+  .day-date {
+    font-size: 40px;
+    order: 1;
+  }
+  
+  .day-icon {
+    display: block;
+    order: 3;
+  }
+  
+  .day-icon .wx-icon {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .day-other {
+    order: 2;
+    display: block;
+  }
+  
+  .day-sub-div {
+    display: inline-block;
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+  
+  .day-sub-div.wx_icon {
+    margin: 0;
+  }
+  
+  .day-temp {
+    font-size: 32px;
+  }
+  
+  .day-temp {
+    color: #a00;
+  }
+  
+  .day-other-data {
+    font-size: 32px;
+    font-weight: 600;
+  }
+  
+  .day-precip {
+    color: #00a;
+  }
+  
+  @media screen and (min-width: 721px) {
+    .day-data {
+      max-width: 150px;
+      display: block;
+    }
+    .day-date {
+      font-size: 20px;
+    }
+    .day-icon {
+      order: 2;
+    }
+    .day-icon .wx-icon {
+      width: 50px;
+      height: 50px;
+    }
+    .day-other {
+      order: 3;
+    }
+    .day-temp {
+      font-size: 16px;
+    }
+    .day-other-data {
+      font-size: 20px;
+    }
+  }
+  

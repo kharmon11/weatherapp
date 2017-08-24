@@ -1,0 +1,15 @@
+#sidebar {
+  background-color: #aaf;
+  flex: 1;
+  display: flex;
+  min-height: 55px;
+  border-right: 5px, solid, #bbf;
+  border-right-style: outset;
+}
+
+@media screen and (min-width: 883px) {
+  #sidebar {
+    min-height: 90vh;
+    display: block;
+  }
+}

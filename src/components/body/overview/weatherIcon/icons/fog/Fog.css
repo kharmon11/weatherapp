@@ -1,0 +1,10 @@
+.fog-clear {
+  fill: #fff;
+  stroke: #fff;
+}
+
+.fog-line {
+  stroke: #aaa;
+  stroke-width: 5px;
+  stroke-linecap: round;
+}

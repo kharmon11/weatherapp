@@ -1,13 +1,24 @@
 {
-  "name": "gcloud-flask-react",
-  "version": "0.0.1",
+  "name": "WxApp",
+  "version": "0.0.3",
   "private": true,
   "devDependencies": {
-    "react-scripts": "1.0.10"
+    "react-scripts": "^1.0.10"
   },
   "dependencies": {
+    "axios": "^0.16.2",
+    "body-parser": "^1.17.2",
+    "chart.js": "^2.6.0",
+    "eslint": "^4.5.0",
+    "express": "^4.15.3",
+    "moment": "^2.18.1",
+    "moment-timezone": "^0.5.13",
+    "morgan": "^1.8.2",
+    "node-rest-client": "^3.1.0",
     "react": "^15.6.1",
-    "react-dom": "^15.6.1"
+    "react-dom": "^15.6.1",
+    "react-redux": "^5.0.5",
+    "redux": "^3.7.2"
   },
   "scripts": {
     "start": "react-scripts start",

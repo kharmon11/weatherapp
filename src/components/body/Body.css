@@ -1,0 +1,6 @@
+#body {
+  background-color: #afa;
+  flex: 5;
+  min-height: 90vh;
+  overflow-x: hidden;
+}

@@ -1,0 +1,6 @@
+.windLine {
+  fill: #fff;
+  stroke: #acb;
+  stroke-width: 5px;
+  stroke-linecap: round;
+}

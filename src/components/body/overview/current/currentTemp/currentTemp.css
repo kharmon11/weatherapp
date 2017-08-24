@@ -1,0 +1,30 @@
+.temp-div {
+    display: block;
+    text-align: center;
+  }
+  
+  .min-max {
+    font-size: 1.2rem;
+    color: #00f;
+    flex: 1;
+  }
+  
+  #current_temp_div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: center;
+    max-width: 150px;
+  }
+  
+  #current_temp {
+    font-size: 2rem;
+    color: #f00;
+  }
+  
+  #min_max_temps {
+    display: flex;
+    justify-content: center;
+  }
+  
