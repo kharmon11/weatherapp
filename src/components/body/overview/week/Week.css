@@ -13,7 +13,7 @@
     flex-direction: column;
   }
   
-  @media screen and (min-width: 721px){
+  @media screen and  (min-width: 721px){
     #days {
       flex-direction: row;
     }

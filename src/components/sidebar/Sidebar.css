@@ -7,7 +7,7 @@
   border-right-style: outset;
 }
 
-@media screen and (min-width: 883px) {
+@media screen and  (min-width: 883px) {
   #sidebar {
     min-height: 90vh;
     display: block;

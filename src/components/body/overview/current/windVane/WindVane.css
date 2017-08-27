@@ -60,7 +60,7 @@
     fill: #000;
   }
   
-  @media screen and (min-width: 761px) {
+  @media screen and  (min-width: 761px) {
     #wind_vane_current {
       max-width: 150px;
     }

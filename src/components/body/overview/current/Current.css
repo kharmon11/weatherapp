@@ -40,7 +40,7 @@
     flex: 1;
   }
   
-  @media screen and (min-width: 761px) {
+  @media screen and  (min-width: 761px) {
     #current_wx_icon {
       max-width: 150px;
     }

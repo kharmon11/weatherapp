@@ -2,7 +2,7 @@ iframe {
   display: none;
 }
 
-@media screen and (min-width: 721px) {
+@media screen and  (min-width: 721px) {
   iframe {
     display: block;
     margin: auto;

@@ -36,7 +36,7 @@
   flex: 1;
 }
 
-@media screen and (min-width: 883px) {
+@media screen and  (min-width: 883px) {
   .sidebar-item {
     font-size: 1.3rem;
     display: block;

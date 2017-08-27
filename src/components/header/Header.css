@@ -35,7 +35,7 @@
     flex: 1;
 }
 
-@media screen and (min-width: 883px) {
+@media screen and  (min-width: 883px) {
     #header_title {
         font-size: 40px;
     }
