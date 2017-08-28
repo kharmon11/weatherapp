@@ -1,6 +1,6 @@
 {
   "name": "WxApp",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "private": true,
   "devDependencies": {
     "react-scripts": "^1.0.10"
