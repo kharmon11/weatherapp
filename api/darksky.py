@@ -19,6 +19,5 @@ class Darksky():
         wxData["city"] = self.geoData["city"]
         wxData["state"] = self.geoData["state"]
         wxData["country"] = self.geoData["country"]
-        # print self.geoData["zipcode"]
         # wxData["zipcode"] = self.geoData["zipcode"]
         return wxData
