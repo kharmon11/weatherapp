@@ -1,10 +1,9 @@
 .day-data-wrapper {
     background-color: #cff;
-    /* min-height: 160px; */
     flex: 1;
     padding-top: 5px;
     padding-bottom: 5px;
-    border-bottom: 2px solid #000;
+    border: 2px solid #000;
 }
 
 .day-data {
@@ -20,14 +19,12 @@
 .day-date {
     font-size: 20px;
     order: 1;
-    /* margin-right: 20px; */
 }
 
 .day-icon {
     display: block;
     order: 2;
     margin-right: auto;
-    /* margin-left: 20px; */
 }
 
 .day-icon .wx-icon {
@@ -38,13 +35,11 @@
 .day-other {
     order: 3;
     display: block;
-    /* margin: auto; */
 }
 
 .day-sub-div {
     display: inline-block;
     flex: 1;
-    /* width: 130px; */
 }
 
 .day-sub-div.wx_icon {
@@ -77,11 +72,8 @@
 
     .day-date {
         font-size: 20px;
-        margin-right: 0;
-    }
-
-    .day-icon {
-        /* order: 2; */
+        margin-right: 10px;
+        margin-bottom: 10px;
     }
 
     .day-icon .wx-icon {
@@ -90,7 +82,6 @@
     }
 
     .day-other {
-        /* order: 3; */
         text-align: center;
     }
 
