@@ -20,7 +20,7 @@ function App(props) {
     main = "";
   }
   return (
-    <div>
+    <div id="App">
       <HeaderContainer/>
       {main}
       <Footer/>

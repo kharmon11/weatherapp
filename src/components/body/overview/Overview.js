@@ -3,7 +3,7 @@ import moment from 'moment-timezone';
 
 import CurrentContainer from './current/CurrentContainer';
 import Map from './map/Map'
-import Week from './week/Week';
+import WeekContainer from './week/WeekContainer';
 
 import './Overview.css';
 
@@ -23,7 +23,7 @@ function Overview(props) {
                 <Map lat={props.data.latitude.toString()} lon={props.data.longitude.toString()}/>
             </div>
             <div id="overview_week" className="overview-div">
-                <Week data={props.data.daily} timezone={props.data.timezone} alert={props.data.alerts}/>
+                <WeekContainer/>
             </div>
         </div>
     );

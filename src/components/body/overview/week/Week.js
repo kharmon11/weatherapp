@@ -7,7 +7,7 @@ import './Week.css';
 
 function Week(props) {
     let alerts;
-    if (props.alert) {
+    if (props.alert.length > 0) {
       alerts = props.alert.map((alert, i) => {
         return (<Alert alert={alert} id={i}/>);
       });

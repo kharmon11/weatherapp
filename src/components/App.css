@@ -6,7 +6,7 @@ html {
 }
 
 #App {
-    display: flex;
+    /* display: flex; */
     flex-direction: column;
     min-height: 100vh;
     margin: 0;
@@ -21,6 +21,6 @@ html {
 @media screen and  (min-width: 883px) {
     #main {
         flex-direction: row;
-        max-height: 680px;
+        /* max-height: 680px; */
     }
 }
