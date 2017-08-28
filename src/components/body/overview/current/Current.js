@@ -9,7 +9,6 @@ import Other from './other/Other';
 
 function Current(props) {
     return (
-        // <div id="current_wx">
             <div id="current_wx_main" className="text-center">
                 <div className="current-wx-half">
                     <WindVane windBearing={props.currently.windBearing}/>
@@ -25,7 +24,6 @@ function Current(props) {
                     <Other currently={props.currently}/>
                 </div>
             </div>
-        // </div>
     );
 }
 
