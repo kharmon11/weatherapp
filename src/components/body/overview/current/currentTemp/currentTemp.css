@@ -4,9 +4,13 @@
   }
   
   .min-max {
-    font-size: 1.2rem;
+    font-size: 1rem;
     color: #00f;
     flex: 1;
+  }
+
+  .current-min-max-text {
+    font-weight: 600;
   }
   
   #current_temp_div {
@@ -29,6 +33,10 @@
   }
   
   @media scree and (min-width: 761px) {
+    .min-max {
+      font-size: 1.2rem;
+    }
+
     #current_temp_div {
       flex: 1;
     }
