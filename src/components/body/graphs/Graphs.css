@@ -9,3 +9,9 @@
   text-align: center;
   margin: auto;
 }
+
+@media screen and  (min-width: 721px) {
+  #graphs {
+      /* height: 1000px; */
+  }
+}

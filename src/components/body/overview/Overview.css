@@ -51,6 +51,6 @@ iframe {
     }
 
     #overview {
-        min-height: 680px;
+        /* height: 600px; */
     }
 }
