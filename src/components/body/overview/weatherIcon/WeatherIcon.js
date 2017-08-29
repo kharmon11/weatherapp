@@ -48,7 +48,7 @@ function WeatherIcon(props) {
         break;
       default:
         icon = (
-          <svg height="100" width="100"></svg>
+          <g></g>
         );
   }
   return (

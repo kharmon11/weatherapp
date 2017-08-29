@@ -10,7 +10,7 @@
   }
   
   #current_temp_div {
-    flex: 1;
+    flex: 6;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -28,3 +28,8 @@
     justify-content: center;
   }
   
+  @media scree and (min-width: 761px) {
+    #current_temp_div {
+      flex: 1;
+    }
+  }

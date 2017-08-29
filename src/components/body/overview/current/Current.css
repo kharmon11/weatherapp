@@ -5,7 +5,7 @@
 
   .current-wx-half {
     display: flex;
-    flex: 1;
+    flex: 1 0 auto;
   }
   
   #current_wx_main {
@@ -21,8 +21,7 @@
   }
   
   #current_wx_icon {
-    flex: 1;
-    max-width: 80px;
+    flex: 3;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -35,6 +34,8 @@
   @media screen and  (min-width: 761px) {
     #current_wx_icon {
       max-width: 150px;
+      flex: 1;
     }
+
   }
   
