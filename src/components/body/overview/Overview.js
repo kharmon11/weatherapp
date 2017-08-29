@@ -15,12 +15,12 @@ function Overview(props) {
             </div>
             <div id="overview_map" className="overview-div">
                 <div id="time_place_div" className="overview-div">
-                    <div id="time-div"
-                         className="time-place">{moment.tz(props.data.currently.time * 1000, props.data.timezone).format("ddd M/DD h:mma")}</div>
-                    <div id="place_div"
-                         className="time-place">{props.data.city}, {props.data.state}, {props.data.country}</div>
+                    <div id="time-div" className="time-place">{moment.tz(props.data.currently.time * 1000, props.data.timezone).format("ddd M/DD h:mma")}</div>
+                    <div id="place_div" className="time-place">{props.data.city}, {props.data.state}, {props.data.country}</div>
                 </div>
-                <Map lat={props.data.latitude.toString()} lon={props.data.longitude.toString()}/>
+                <div id="map_wrapper">
+                    <Map lat={props.data.latitude.toString()} lon={props.data.longitude.toString()}/>
+                </div>
             </div>
             <div id="overview_week" className="overview-div">
                 <WeekContainer/>

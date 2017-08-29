@@ -24,6 +24,7 @@ iframe {
 }
 
 #overview_map {
+    display: block;
     flex: 3;
 }
 
@@ -50,7 +51,16 @@ iframe {
         max-height: 300px;
     }
 
-    #overview {
-        /* height: 600px; */
+    #overview_map {
+        display: flex;
+        align-items: center;
+    }
+
+    #time_place_div {
+        flex: 2;
+    }
+
+    #map_wrapper {
+        flex: 3;
     }
 }
