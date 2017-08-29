@@ -1,6 +1,5 @@
 #sidebar {
   background-color: #aaf;
-  flex: 1;
   display: flex;
   min-height: 55px;
   border-right: 5px, solid, #bbf;
@@ -9,6 +8,7 @@
 
 @media screen and  (min-width: 883px) {
   #sidebar {
+    flex: 1;
     display: block;
   }
 }
