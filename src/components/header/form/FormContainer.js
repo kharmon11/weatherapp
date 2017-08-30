@@ -34,6 +34,7 @@ class FormContainer extends Component {
             this.addDataToStore(response.data);
         }).catch((error) => {
             console.log(error);
+            alert("Error retrieving data! Try again later!");
         });
     }
 

@@ -29,6 +29,8 @@ class Config {
         };
         this.createDatasetObjects = this.createDatasetObjects.bind(this);
         this.changeDatasetProps = this.changeDatasetProps.bind(this);
+        this.setTitle = this.setTitle.bind(this);
+        this.labelCallback = this.labelCallback.bind(this);
     }
 
     createDatasetObjects(num) {
@@ -61,12 +63,36 @@ class Config {
             }
         }
     }
+
+    setTitle(title) {
+        this.config.options.title.text = title;
+    }
+
+    labelCallback() {
+        this.config.options.tooltips = {
+            callbacks: {
+                label: (t, d) => {
+                    const datum = d.datasets[t.datasetIndex].data[t.index]
+                    if (t.datasetIndex === 0) {
+                        return "Temp: " + datum + String.fromCharCode(176) + "F";
+                    } else {
+                        return "Dewpoint: " + datum + String.fromCharCode(176) + "F";
+                    }
+
+                }
+            }
+        }
+    }
 }
 
 class PrecipConfig extends Config {
     constructor(data) {
         super(data);
         this.todayPrecipRate = this.todayPrecipRate.bind(this);
+    }
+
+    config() {
+        this.setTitle("Precipitation, Cloud Cover, & Relative Humidity")
     }
 
     todayPrecipRate() {
@@ -100,7 +126,7 @@ class TempTodayConfig extends Config {
         return new Promise((resolve, reject) => {
             this.createDatasetObjects(2).then(() => {
                 // Chart Properties
-                this.config.options.title.text = "Temperature & Dewpoint";
+                this.setTitle("Temperature & Dewpoint");
                 this.config.options.tooltips = {
                     callbacks: {
                         label: (t, d) => {
@@ -162,7 +188,6 @@ class PrecipTodayConfig extends PrecipConfig {
             this.createDatasetObjects(4).then(() => {
                 // Chart Properties
                 this.config.type = "bar"
-                this.config.options.title.text = "Precipitation, Cloud Cover, & Relative Humidity";
                 this.config.options.tooltips = {
                     callbacks: {
                         label: (t, d) => {
@@ -495,7 +520,6 @@ class PrecipLongConfig extends PrecipConfig {
             this.createDatasetObjects(4).then(() => {
                 // Chart Properties
                 this.config.type = "bar"
-                this.config.options.title.text = "Precipitation, Cloud Cover, & Relative Humidity";
                 this.config.options.tooltips = {
                     callbacks: {
                         label: (t, d) => {

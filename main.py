@@ -30,12 +30,13 @@ def index():
 def weather():
     geo = Geocode(app.config["GEOCODE_KEY"], request.json["location"])
     geoData = geo.call()
-    if "lat" in geoData["output"] and "lon" in geoData["output"]:
+    if geoData["type"] == "data":
         ds = Darksky(app.config["DARKSKY_KEY"], geoData["output"])
         wxData = ds.call()
         return jsonify(wxData)
     else:
-        return None
+        print geoData["output"]
+        return geoData
 
 
 @app.errorhandler(404)

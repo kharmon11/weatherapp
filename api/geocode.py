@@ -10,11 +10,7 @@ class Geocode():
         url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + self.location + "&key=" + self.key
         requests_toolbelt.adapters.appengine.monkeypatch()
         response = requests.get(url)
-        if response.status_code == 200:
-            return self.get_coords(response)
-        else:
-            print response.raise_for_status()
-            return {"type": "error", "output": "Error: Can not retrieve data at the moment."}
+        return self.get_coords(response)
 
     def get_coords(self, response):
         geodata = self.data_json(response)
@@ -54,10 +50,8 @@ class Geocode():
 
     def error_handler(self, status):
         if status == "ZERO_RESULTS":
-            return "No location associated with submitted address."
-        elif status == "OVER_QUERY_LIMIT" or status == "REQUEST_DENIED" or status == "INVALID_REQUEST":
-            return "Error: Can not retrieve data at the moment."
+            return "No location associated with submitted location."
         elif status == "UNKNOWN_ERROR":
-            return "External Server Error: Try submitting again."
+            return "Geocoding External Server Error: Try submitting again."
         else:
-            return "Error: Can not retrieve data at the moment."
+            return "Geocoding Error: Can not retrieve data at the moment."
