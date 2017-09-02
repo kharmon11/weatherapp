@@ -6,7 +6,7 @@ import Header from './Header';
 class HeaderContainer extends Component {
   render() {
     if (this.props.showBody) {
-      document.getElementById("header").style["height"] = "17vh";
+      document.getElementById("header").style["height"] = "100px";
     }
     return (<Header/>)
   }
