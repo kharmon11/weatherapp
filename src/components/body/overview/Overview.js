@@ -2,7 +2,7 @@ import React from 'react';
 import moment from 'moment-timezone';
 
 import CurrentContainer from './current/CurrentContainer';
-import Map from './map/Map'
+import MapContainer from './map/MapContainer'
 import WeekContainer from './week/WeekContainer';
 
 import './Overview.css';
@@ -19,7 +19,7 @@ function Overview(props) {
                     <div id="place_div" className="time-place">{props.data.city}, {props.data.state}, {props.data.country}</div>
                 </div>
                 <div id="map_wrapper">
-                    <Map lat={props.data.latitude.toString()} lon={props.data.longitude.toString()}/>
+                    <MapContainer/>
                 </div>
             </div>
             <div id="overview_week" className="overview-div">
