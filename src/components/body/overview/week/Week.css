@@ -9,12 +9,13 @@
   }
   
   #days {
-    display: flex;
-    flex-direction: column;
+    display: block;
+    /* flex-direction: column; */
   }
   
   @media screen and  (min-width: 721px){
     #days {
+      display: flex;
       flex-direction: row;
     }
   }
