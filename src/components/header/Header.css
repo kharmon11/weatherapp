@@ -34,7 +34,6 @@
 }
 
 #app_form_div {
-    /* max-width: 700px; */
     margin: auto;
     display: flex;
 }
@@ -45,10 +44,6 @@
 }
 
 @media screen and  (min-width: 883px) {
-    /* #header {
-        height: 100px;
-    } */
-
     #header_title {
         font-size: 40px;
     }

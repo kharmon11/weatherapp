@@ -53,7 +53,7 @@ class ButtonContainer extends Component {
 
     render() {
         let title = "";
-        if (this.props.name.includes("_")) {
+        if (this.props.name.indexOf("_") > -1) {
             const split = this.props.name.split("_");
             for (let i=0; i<split.length; i++) {
                 title += (split[i][0].toUpperCase() + split[i].slice(1));
