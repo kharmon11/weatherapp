@@ -8,7 +8,6 @@
     flex-direction: column;
     height: 90vh;
     width: 100%;
-    /* flex-grow: 4; */
     align-items: center;
 }
 
@@ -31,6 +30,7 @@
 
 #app_form_div_wrapper {
     flex: 1;
+    width: 400px;
 }
 
 #app_form_div {
