@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import Chart from 'chart.js';
 
-import {TempTodayConfig, PrecipTodayConfig, WindTodayConfig} from '../chartConfig';
+import {TempTodayConfig, PrecipTodayConfig, WindTodayConfig} from '../configs';
 
 import Today from './Today';
 
