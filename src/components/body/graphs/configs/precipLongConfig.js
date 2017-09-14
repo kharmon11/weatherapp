@@ -12,11 +12,12 @@ class PrecipLongConfig extends PrecipConfig {
         return new Promise((resolve, reject) => {
             this.createDatasetObjects(4).then(() => {
                 // Chart Properties
+                this.setTitle("Precipitation, Cloud Cover, & Relative Humidity")
                 this.config.type = "bar"
                 this.config.options.tooltips = {
                     callbacks: {
                         label: (t, d) => {
-                            const datum = d.datasets[t.datasetIndex].data[t.index]
+                            const datum = d.datasets[t.datasetIndex].data[t.index];
                             if (t.datasetIndex === 3) {
                                 if (datum === "0") {
                                     return "No Precip";
@@ -68,6 +69,7 @@ class PrecipLongConfig extends PrecipConfig {
                         ticks: {
                             min: 0,
                             max: 3,
+                            stepSize: 1,
                             callback: function(value, index, values) {
                                 if (value === 0) {
                                     return "None";

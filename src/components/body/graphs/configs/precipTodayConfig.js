@@ -12,6 +12,7 @@ class PrecipTodayConfig extends PrecipConfig {
         return new Promise((resolve, reject) => {
             this.createDatasetObjects(4).then(() => {
                 // Chart Properties
+                this.setTitle("Precipitation, Cloud Cover, & Relative Humidity")
                 this.config.type = "bar"
                 this.config.options.tooltips = {
                     callbacks: {
@@ -68,6 +69,7 @@ class PrecipTodayConfig extends PrecipConfig {
                         ticks: {
                             min: 0,
                             max: 3,
+                            stepValue: 1,
                             callback: function(value, index, values) {
                                 if (value === 0) {
                                     return "None";
