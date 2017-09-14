@@ -9,6 +9,7 @@ function Sidebar(props) {
     <div id="sidebar">
       <SidebarItemContainer id="overview"/>
       <SidebarItemContainer id="graphs"/>
+      <SidebarItemContainer id="history"/>
     </div>
   );
 }
