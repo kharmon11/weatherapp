@@ -17,5 +17,6 @@ skip_files:
 - ^(.*/)?.*/RCS/.*$
 - ^(.*/)?\..*$
 - ^node_modules$
+- ^src$
 
 # TODO: List any other App Engine SDK libs you may need here.
