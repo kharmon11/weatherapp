@@ -1,9 +1,9 @@
 import moment from 'moment-timezone';
-import Config from './config';
+import TempConfig from './tempConfig';
 
 const onClickLegendDefault = require('chart.js').defaults.global.legend.onClick;
 
-class TempLongConfig extends Config {
+class TempLongConfig extends TempConfig {
     constructor(data) {
         super(data);
         this.create = this.create.bind(this);
@@ -12,6 +12,7 @@ class TempLongConfig extends Config {
     create() {
         return new Promise((resolve, reject) => {
             this.createDatasetObjects(3).then(() => {
+                this.configureChart();
                 // Chart Plugins
                 this.config.plugins = [{
                     afterDraw: (chart, options) => {
@@ -26,7 +27,6 @@ class TempLongConfig extends Config {
                 }];
 
                 // Chart Properties
-                this.config.options.title.text = "Temperature";
                 this.config.options.tooltips = {
                     intersect: false,
                     callbacks: {

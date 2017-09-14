@@ -41,6 +41,7 @@
 #darksky_img {
     height: 30px;
     flex: 1;
+    margin-left: 40px;
 }
 
 @media screen and  (min-width: 883px) {

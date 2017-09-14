@@ -1,8 +1,7 @@
 import moment from 'moment-timezone';
+import TempConfig from './tempConfig';
 
-import Config from './config';
-
-class TempTodayConfig extends Config {
+class TempTodayConfig extends TempConfig {
     constructor(data) {
         super(data);
         this.create = this.create.bind(this);
@@ -12,7 +11,7 @@ class TempTodayConfig extends Config {
         return new Promise((resolve, reject) => {
             this.createDatasetObjects(2).then(() => {
                 // Chart Properties
-                this.setTitle("Temperature & Dewpoint");
+                this.configureChart();
                 this.config.options.tooltips = {
                     callbacks: {
                         label: (t, d) => {
