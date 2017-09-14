@@ -46,13 +46,7 @@ class TempTodayConfig extends TempConfig {
                 for (i=0; i<24; i++) {
                     time = moment.tz(this.data.hourly.data[i].time * 1000, this.data.timezone).format("h:mma");
                     this.config.data.labels.push(time);
-                    if (time === "12:00am") {
-                        this.config.options.scales.xAxes[0].gridLines.lineWidth.push(1);
-                        this.config.options.scales.xAxes[0].gridLines.color.push("rgba(0,0,0,0.5");
-                    } else {
-                        this.config.options.scales.xAxes[0].gridLines.lineWidth.push(1);
-                        this.config.options.scales.xAxes[0].gridLines.color.push("rgba(0,0,0,0.1)");
-                    }
+                    this.midnightLineMark(time);
                     this.config.data.datasets[0].data.push(Math.round(this.data.hourly.data[i].temperature));  
                     this.config.data.datasets[1].data.push(Math.round(this.data.hourly.data[i].dewPoint)); 
                 }

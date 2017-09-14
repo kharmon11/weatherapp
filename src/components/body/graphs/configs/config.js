@@ -27,6 +27,7 @@ class Config {
         this.changeDatasetProps = this.changeDatasetProps.bind(this);
         this.setTitle = this.setTitle.bind(this);
         this.labelCallback = this.labelCallback.bind(this);
+        this.midnightLineMark = this.midnightLineMark.bind(this);
     }
 
     createDatasetObjects(num) {
@@ -77,6 +78,16 @@ class Config {
 
                 }
             }
+        }
+    }
+
+    midnightLineMark(time) {
+        if (time === "12:00am") {
+            this.config.options.scales.xAxes[0].gridLines.lineWidth.push(1);
+            this.config.options.scales.xAxes[0].gridLines.color.push("rgba(0,0,0,0.5");
+        } else {
+            this.config.options.scales.xAxes[0].gridLines.lineWidth.push(1);
+            this.config.options.scales.xAxes[0].gridLines.color.push("rgba(0,0,0,0.1)");
         }
     }
 }
