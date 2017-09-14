@@ -1,4 +1,3 @@
-import moment from 'moment-timezone';
 import TempConfig from './tempConfig';
 
 const onClickLegendDefault = require('chart.js').defaults.global.legend.onClick;
@@ -104,13 +103,7 @@ class TempLongConfig extends TempConfig {
                     hidden: true
                 });
 
-                let i;
-                for (i=0; i<8; i++) {
-                    this.config.data.datasets[0].data.push(this.data.daily.data[i].temperatureMin);
-                    this.config.data.datasets[1].data.push(this.data.daily.data[i].temperatureMax);
-                    this.config.data.datasets[2].data.push(this.data.daily.data[i].dewPoint);
-                    this.config.data.labels.push(moment.tz(this.data.daily.data[i].time * 1000, this.data.timezone).format("ddd, M/DD"));
-                }
+                this.tempHandler(8);
                 resolve(this.config);
             })
         })

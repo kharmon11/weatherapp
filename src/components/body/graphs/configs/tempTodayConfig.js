@@ -1,4 +1,3 @@
-import moment from 'moment-timezone';
 import TempConfig from './tempConfig';
 
 class TempTodayConfig extends TempConfig {
@@ -41,15 +40,7 @@ class TempTodayConfig extends TempConfig {
                     hidden: true
                 });
 
-                let i;
-                let time;
-                for (i=0; i<24; i++) {
-                    time = moment.tz(this.data.hourly.data[i].time * 1000, this.data.timezone).format("h:mma");
-                    this.config.data.labels.push(time);
-                    this.midnightLineMark(time);
-                    this.config.data.datasets[0].data.push(Math.round(this.data.hourly.data[i].temperature));  
-                    this.config.data.datasets[1].data.push(Math.round(this.data.hourly.data[i].dewPoint)); 
-                }
+                this.tempHandler(24);
                 resolve(this.config);    
             });
         });
