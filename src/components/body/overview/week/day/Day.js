@@ -39,6 +39,7 @@ function Day(props) {
                     </div>
                 </div>
             </div>
+            <div className="day-summary">{props.data.summary}</div>
         </div>
     );
 }

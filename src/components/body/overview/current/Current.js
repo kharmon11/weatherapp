@@ -10,7 +10,7 @@ import Other from './other/Other';
 function Current(props) {
     return (
             <div id="current_wx_main" className="text-center">
-                <div className="current-wx-half">
+                <div className="current-wx-section">
                     <WindVane windBearing={props.currently.windBearing}/>
                     <div id="current_wx_icon" className="current-wx">
                         <WeatherIcon id="current" icon={props.currently.icon}/>
@@ -20,7 +20,10 @@ function Current(props) {
                     </div>
                     <CurrentTemp temp={Math.round(props.currently.temperature)} maxTemp={Math.round(props.today.temperatureMax)} minTemp={Math.round(props.today.temperatureMin)} dewPt={Math.round(props.currently.dewPoint)}/>
                 </div>
-                <div className="current-wx-half">
+                <div id="current_day_summary" className="current-wx-section">
+                    Summary: {props.today.summary}
+                </div>
+                <div className="current-wx-section">
                     <Other currently={props.currently}/>
                 </div>
             </div>

@@ -2,48 +2,11 @@ iframe {
     display: none;
 }
 
-.overview-div {
-    padding-top: 5px;
-    padding-bottom: 5px;
-}
-
-.time-place {
-    padding-left: 5px;
-    padding-right: 5px;
-    display: inline-block;
-}
-
-#overview {
-    width: 100%;
-    /* display: flex; */
-    flex-direction: column;
-}
-
-#overview_current {
-    display: flex;
-}
-
 #overview_map {
-    display: block;
-    /* flex: 3; */
-}
-
-#time_place_div {
-    font-size: 20px;
-    display: block;
     text-align: center;
 }
 
-#overview_current_data {
-    /* flex: 2; */
-}
-
-#overview_week {
-    /* flex: 3; */
-    height: 100%;
-}
-
-@media screen and  (min-width: 721px) {
+@media screen and (min-width: 721px) {
     iframe {
         display: block;
         margin: auto;
@@ -51,16 +14,12 @@ iframe {
         max-height: 300px;
     }
 
-    #overview_map {
+    #overview_main {
         display: flex;
-        align-items: center;
+        margin-bottom: 70px;
     }
 
-    #time_place_div {
+    #overview_map {
         flex: 2;
-    }
-
-    #map_wrapper {
-        flex: 3;
     }
 }
