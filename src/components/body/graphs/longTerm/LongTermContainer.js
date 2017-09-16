@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import Chart from 'chart.js';
 
-import {TempLongConfig, PrecipLongConfig, WindLongConfig} from '../configs';
+import {TempLongConfig, PrecipLongConfig, WindLongConfig} from '../../configs';
 
 import LongTerm from './LongTerm';
 

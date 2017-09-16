@@ -3,6 +3,7 @@ import {sidebarReducer} from './sidebarReducer';
 import {addDataReducer} from './addDataReducer';
 import {showBodyReducer} from './showBodyReducer';
 import {overallGraphsReducer} from './overallGraphsReducer';
+import {historyDataReducer} from './historyDataReducer';
 
 const reducer = combineReducers(
     {
@@ -10,6 +11,7 @@ const reducer = combineReducers(
         data: addDataReducer, 
         showBody: showBodyReducer,
         overall: overallGraphsReducer,
+        history: historyDataReducer,
     }
 );
 
