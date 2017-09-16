@@ -1,1 +1,1 @@
-<a href="weather.kenharmon.net">weather.kenharmon.net</a>
+<a href="http://weather.kenharmon.net">weather.kenharmon.net</a>
