@@ -7,6 +7,9 @@ handlers:
 - url: /static
   static_dir: static
   application_readable: true
+- url: /\.well-known/acme-challenge/.*
+  script: letsencrypt.app
+  secure: never
 - url: /.*
   script: main.app
   secure: never
