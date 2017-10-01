@@ -30,42 +30,26 @@ class BodyContainer extends Component {
   }
 
   setBodyHeight() {
-    const main= document.getElementById("main");
     const body = document.getElementById("body");
-    if (this.state.width <= 721) {
+    if (this.state.width <= 761) {
       if (this.props.sidebar === "overview") {
-        // main.style.height = "1070px";
-        body.style["max-height"] = "1070px";
+        body.style.maxHeight = "";
       } else {
-        // main.style.height = "960px";
-        body.style["max-height"] = "960px";
+        body.style.maxHeight = "960px";
       }
     } else {
       if (this.props.sidebar === "overview") {
-        // main.style.height = "580px";
-        body.style["max-height"] = "580px";
+        body.style.maxHeight = "";
       } else {
-        // main.style.height = "990px";
-        body.style["max-height"] = "990px";
+        body.style.maxHeight = "990px";
       }
     }
   }
 
   render() {
-    // if (document.getElementById("body")) {
-    //   this.setBodyHeight();
-    // }
-    // const bodyStyle = {
-    //   height: ""
-    // }
-    // if (this.props.sidebar ==)
     return (<Body sidebar={this.props.sidebar}/>);
   }
 }
-
-// function BodyContainer(props) {
-//   return (<Body sidebar={props.sidebar}/>);
-// }
 
 const mapStateToProps = state => {
   return {sidebar: state.sidebar};

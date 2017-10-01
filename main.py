@@ -2,6 +2,7 @@ import os
 from flask import Flask, render_template, url_for, jsonify, request
 from api.geocode import Geocode
 from api.darksky import Darksky
+from api.history import History
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile('config.py')
@@ -38,6 +39,12 @@ def weather():
         print geoData["output"]
         return geoData
 
+@app.route('/history', methods=['POST'])
+def history():
+    h = History(key=app.config["DARKSKY_KEY"], lat=request.json["lat"], lon=request.json["lon"], timestamp=request.json["timestamp"])
+    response = h.call()
+    return jsonify(response)
+
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -50,4 +57,4 @@ def application_error(e):
 
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run()

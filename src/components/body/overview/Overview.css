@@ -6,7 +6,7 @@ iframe {
     text-align: center;
 }
 
-@media screen and (min-width: 721px) {
+@media screen and (min-width: 761px) {
     iframe {
         display: block;
         margin: auto;

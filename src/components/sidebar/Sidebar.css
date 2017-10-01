@@ -6,7 +6,7 @@
   border-right-style: outset;
 }
 
-@media screen and  (min-width: 883px) {
+@media screen and  (min-width: 761px) {
   #sidebar {
     flex: 1;
     display: block;

@@ -69,6 +69,8 @@ class PrecipConfig extends Config {
                 ticks: {
                     min: 0,
                     max: 3,
+                    minRotation: 300,
+                    maxRotation: 300,
                     stepSize: 1,
                     callback: function(value, index, values) {
                         if (value === 0) {

@@ -1,7 +1,7 @@
 #body {
     background-color: #afa;
     min-height: 500px;
-    overflow-x: hidden;
+    /* overflow-y: hidden; */
 }
 
 @media screen and  (min-width: 721px) {

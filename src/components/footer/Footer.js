@@ -6,15 +6,17 @@ import './Footer.css';
 
 function Footer(props) {
   return (
-    <div id="footer">
-      <div className="footer-section">
-        <a id="footer_link" href="https://kenharmon.net">
-          <Logo/>
-        </a>
+    <div id="footer_wrapper">
+      <div id="footer">
+        <div className="footer-section">
+          <a id="footer_link" href="https://kenharmon.net">
+            <Logo/>
+          </a>
 
-      </div>
-      <div className="footer-section">
-      &copy;2017 Ken Harmon
+        </div>
+        <div className="footer-section">
+        &copy;2017 Ken Harmon
+        </div>
       </div>
     </div>
   );

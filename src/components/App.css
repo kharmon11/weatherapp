@@ -1,6 +1,5 @@
 html {
     font-size: 16px;
-    /* min-height: 100vh; */
     height: 100%;
     margin: 0;
     padding: 0;
@@ -9,7 +8,6 @@ html {
 body {margin:0;padding:0;height:100%;}
 
 #App {
-    /* display: flex; */
     flex-direction: column;
     min-height: 100vh;
     margin: 0;
@@ -21,9 +19,8 @@ body {margin:0;padding:0;height:100%;}
     flex-direction: column;
 }
 
-@media screen and  (min-width: 883px) {
+@media screen and  (min-width: 761px) {
     #main {
         flex-direction: row;
-        /* max-height: 680px; */
     }
 }
