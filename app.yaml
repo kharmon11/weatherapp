@@ -12,7 +12,7 @@ handlers:
   secure: never
 - url: /.*
   script: main.app
-  secure: never
+  secure: always
 skip_files:
 - ^(.*/)?#.*#$
 - ^(.*/)?.*~$
