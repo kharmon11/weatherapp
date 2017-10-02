@@ -1,0 +1,8 @@
+.history-meta-data {
+    flex: 1;
+}
+
+#history_meta {
+    display: flex;
+    max-width: 400px;
+}

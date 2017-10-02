@@ -25,8 +25,8 @@
 }
 
 .sidebar-img {
-  height: 50px;
-  width: 50px;
+  height: 30px;
+  width: 30px;
   stroke: #000;
   stroke-width: 5px;
   fill: transparent;
@@ -43,5 +43,10 @@
     margin: auto;
     padding: 20px 10px 20px 10px;
     height: auto;
+  }
+
+  .sidebar-img {
+    height: 50px;
+    width: 50px;
   }
 }
