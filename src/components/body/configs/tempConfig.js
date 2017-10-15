@@ -15,9 +15,10 @@ class TempConfig extends Config {
     tempHandler(timeIntervals) {
         let i;
         let time;
+        const timeFormat = timeIntervals === 24 ? "h:mma": "MMM DD";
+        const timeType = timeIntervals === 24 ? "hourly": "daily";
         for (i=0; i<timeIntervals; i++) {
-            
-            time = moment.tz(this.data.hourly.data[i].time * 1000, this.data.timezone).format("h:mma");
+            time = moment.tz(this.data[timeType].data[i].time * 1000, this.data.timezone).format(timeFormat);
             this.config.data.labels.push(time);
             if (timeIntervals === 24) {
                 this.midnightLineMark(time);
