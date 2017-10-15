@@ -139,8 +139,10 @@ class PrecipConfig extends Config {
     nonPrecipRateHandler(timeIntervals) {
         let i;
         let time;
+        const timeFormat = timeIntervals === 24 ? "h:mma": "MMM DD";
+        const timeType = timeIntervals === 24 ? "hourly": "daily";
         for (i=0; i<timeIntervals; i++) {
-            time = moment.tz(this.data.hourly.data[i].time * 1000, this.data.timezone).format("h:mma");
+            time = moment.tz(this.data[timeType].data[i].time * 1000, this.data.timezone).format(timeFormat);
             this.config.data.labels.push(time);
 
             if (time === "12:00am") {
@@ -150,15 +152,10 @@ class PrecipConfig extends Config {
                 this.config.options.scales.xAxes[0].gridLines.lineWidth.push(1);
                 this.config.options.scales.xAxes[0].gridLines.color.push("rgba(0,0,0,0.1)");
             }
-            let timeData;
-            if (timeIntervals === 8) {
-                timeData = "daily";
-            } else {
-                timeData = "hourly";
-            }
-            this.config.data.datasets[0].data.push(this.data[timeData].data[i].precipProbability * 100);  
-            this.config.data.datasets[1].data.push(this.data[timeData].data[i].cloudCover * 100);
-            this.config.data.datasets[2].data.push(this.data[timeData].data[i].humidity * 100);  
+
+            this.config.data.datasets[0].data.push(this.data[timeType].data[i].precipProbability * 100);  
+            this.config.data.datasets[1].data.push(this.data[timeType].data[i].cloudCover * 100);
+            this.config.data.datasets[2].data.push(this.data[timeType].data[i].humidity * 100);  
         }
     }
 

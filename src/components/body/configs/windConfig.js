@@ -42,14 +42,16 @@ class WindConfig extends Config {
     windDataHandler(timeIntervals) {
         let i;
         let time;
+        const timeFormat = timeIntervals === 24 ? "h:mma": "MMM DD";
+        const timeType = timeIntervals === 24 ? "hourly": "daily";
         for (i=0; i<timeIntervals; i++) {
-            time = moment.tz(this.data.hourly.data[i].time * 1000, this.data.timezone).format("h:mma");
+            time = moment.tz(this.data[timeType].data[i].time * 1000, this.data.timezone).format(timeFormat);
             this.config.data.labels.push(time);
             if (timeIntervals === 24) {
                 this.midnightLineMark(time);
             }
-            this.config.data.datasets[0].data.push(Math.round(this.data.hourly.data[i].windSpeed));  
-            this.config.data.datasets[1].data.push(Math.round(this.data.hourly.data[i].windGust)); 
+            this.config.data.datasets[0].data.push(Math.round(this.data[timeType].data[i].windSpeed));  
+            this.config.data.datasets[1].data.push(Math.round(this.data[timeType].data[i].windGust)); 
         }
     }
 }
