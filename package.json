@@ -21,7 +21,7 @@
     "build": "react-scripts build",
     "eject": "react-scripts eject",
     "flask": "react-scripts build && rm -rf static/* && mv build/static/* static && rmdir build/static && mv build/service-worker.js . && rm -rf templates/* && mv build/* templates && rmdir build",
-    "appserver": "~/sdk/google-cloud-sdk/platform/google_appengine/dev_appserver.py --host 127.0.0.1 .",
+    "appserver": "~/google-cloud-sdk/platform/google_appengine/dev_appserver.py --host 127.0.0.1 .",
     "lib": "pip install -t lib -r requirements.txt"
   }
 }
