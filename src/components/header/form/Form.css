@@ -14,7 +14,7 @@
 }
 
 #location_field {
-  margin-left: 1rem;
+  margin-left: 0rem;
 }
 #submit {
   background-color: #f94;
@@ -41,7 +41,7 @@
   }
 
   #location_field {
-    margin-left: 0.5rem;
+    margin-left: 1rem;
   }
 
   #submit {
