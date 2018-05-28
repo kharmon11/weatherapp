@@ -36,7 +36,6 @@ def weather():
         wxData = ds.call()
         return jsonify(wxData)
     else:
-        print geoData["output"]
         return geoData
 
 @app.route('/history', methods=['POST'])

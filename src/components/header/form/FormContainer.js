@@ -47,12 +47,10 @@ class FormContainer extends Component {
     }
 
     showSpinner() {
-        console.log("SHOW");
         document.getElementById("search_spinner").style.display = "Flex"
     }
 
     hideSpinner() {
-        console.log("HIDE");
         document.getElementById("search_spinner").style.display = "None"
     }
 

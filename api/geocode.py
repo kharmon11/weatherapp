@@ -9,7 +9,6 @@ class Geocode():
 
     def call(self):
         url = "https://maps.googleapis.com/maps/api/geocode/json?" + self.search_param + "=" + self.location + "&key=" + self.key
-        print url
         requests_toolbelt.adapters.appengine.monkeypatch()
         response = requests.get(url)
         return self.get_coords(response)
