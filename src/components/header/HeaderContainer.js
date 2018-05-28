@@ -10,6 +10,8 @@ class HeaderContainer extends Component {
       document.getElementById("header").style["display"] = "block";
       document.getElementById("app_form_div_wrapper").style["margin"] = "auto";
       document.getElementById("darksky_img").style["margin-left"] = 0;
+      document.getElementById("app_form_div").style["align-items"] = "unset";
+      document.getElementById("app_form_div").style["flex-direction"] = "unset";
     }
     return (<Header/>)
   }

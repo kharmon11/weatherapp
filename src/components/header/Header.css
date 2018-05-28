@@ -36,10 +36,12 @@
 #app_form_div {
     margin: auto;
     display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
 }
 
 #darksky_img {
-    height: 30px;
+    height: 20px;
     flex: 1;
     margin-left: 10px;
 }
