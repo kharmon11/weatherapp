@@ -29,7 +29,7 @@ def index():
 
 @app.route('/weather', methods=['POST'])
 def weather():
-    geo = Geocode(app.config["GEOCODE_KEY"], request.json["location"])
+    geo = Geocode(app.config["GEOCODE_KEY"], request.json["searchParam"],request.json["location"])
     geoData = geo.call()
     if geoData["type"] == "data":
         ds = Darksky(app.config["DARKSKY_KEY"], geoData["output"])

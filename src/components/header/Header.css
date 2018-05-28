@@ -41,11 +41,15 @@
 #darksky_img {
     height: 30px;
     flex: 1;
-    margin-left: 40px;
+    margin-left: 10px;
 }
 
 @media screen and  (min-width: 883px) {
     #header_title {
         font-size: 40px;
+    }
+
+    #darksky_img {
+        margin-left: 40px;
     }
 }

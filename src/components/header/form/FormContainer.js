@@ -16,6 +16,9 @@ class FormContainer extends Component {
 
         this.locationChange = this.locationChange.bind(this);
         this.submitForm = this.submitForm.bind(this);
+        this.nearbyClick = this.nearbyClick.bind(this);
+        this.showSpinner = this.showSpinner.bind(this);
+        this.hideSpinner = this.hideSpinner.bind(this);
         this.axiosCall = this.axiosCall.bind(this);
         this.addDataToStore = this.addDataToStore.bind(this);
     }
@@ -26,15 +29,41 @@ class FormContainer extends Component {
 
     submitForm(event) {
         event.preventDefault();
-        this.axiosCall(this.state.location);
+        this.showSpinner();
+        this.axiosCall("/weather", {searchParam: "address",location: this.state.location});
     }
 
-    axiosCall(locationInput) {
-        axios.post("/weather", {location: locationInput}).then((response) => {
+    nearbyClick(event) {
+        event.preventDefault();
+        this.showSpinner();
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                this.axiosCall("/weather", {searchParam: "address",location: position.coords.latitude + "," + position.coords.longitude})
+              });
+          } else {
+            alert("Geolocation is not available for your browser! Try searching for a location manually.");
+            this.hideSpinner();
+          }
+    }
+
+    showSpinner() {
+        console.log("SHOW");
+        document.getElementById("search_spinner").style.display = "Flex"
+    }
+
+    hideSpinner() {
+        console.log("HIDE");
+        document.getElementById("search_spinner").style.display = "None"
+    }
+
+    axiosCall(endpoint, searchData) {
+        axios.post(endpoint, searchData).then((response) => {
             this.addDataToStore(response.data);
+            this.hideSpinner();
         }).catch((error) => {
             console.log(error);
             alert("Error retrieving data! Try again later!");
+            this.hideSpinner();
         });
     }
 
@@ -44,7 +73,7 @@ class FormContainer extends Component {
     }
 
     render() {
-        return (<Form location={this.state.location} onchange={this.locationChange} onsubmit={this.submitForm}/>);
+        return (<Form location={this.state.location} onchange={this.locationChange} onsubmit={this.submitForm} nearby={this.nearbyClick}/>);
     }
 }
 

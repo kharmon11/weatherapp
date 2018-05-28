@@ -16,6 +16,7 @@ class Darksky():
 
     def convert_response(self, response):
         wxData = json.loads(response.text)
+        print self.geoData
         wxData["city"] = self.geoData["city"]
         wxData["state"] = self.geoData["state"]
         wxData["country"] = self.geoData["country"]
