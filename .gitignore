@@ -1,5 +1,6 @@
 ### Custom
 .idea/
+app.yaml
 
 ### VisualStudioCode template
 .vscode/*
