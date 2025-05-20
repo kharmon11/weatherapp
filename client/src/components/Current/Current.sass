@@ -1,0 +1,82 @@
+.current
+  display: flex
+  flex-direction: column
+  flex: 1
+  align-items: center
+  justify-content: space-between
+
+  .data-info
+    max-width: 600px
+    margin-left: auto
+    margin-right: auto
+    display: flex
+    flex-wrap: wrap
+    justify-content: center
+    align-items: center
+
+    span
+      margin: 0 20px
+
+    .location-name
+      font-size: 1.5rem
+
+  .current-weather
+    width: 100%
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: space-evenly
+
+    .current-temp-humidity
+      display: flex
+      flex-direction: column
+      justify-content: space-between
+
+      .temp-circle
+        width: 150px
+        height: 150px
+        color: #c00
+        font-size: 4rem
+        border-radius: 50%
+        border: 5px solid #222
+
+        .temp-display
+          transform: translateY(20px)
+
+        .feels-like-display
+          font-size: 0.8rem
+          transform: translateY(20px)
+
+          .feels-like-text
+            color: #000
+
+      .current-humidity
+        color: #090
+
+    .current-wind-speeds
+      color: #44f
+
+    .current-conditions-description
+      display: flex
+      justify-content: center
+      align-items: center
+
+@media (min-width: 768px)
+  .current
+    min-width: 450px
+
+    .data-info
+      flex-direction: row
+
+    .current-weather
+      min-width: 450px
+      flex-direction: row
+
+@media (min-width: 1400px)
+  .current
+    min-width: 800px
+    max-width: 1000px
+
+    .current-weather
+      min-width: 800px
+      max-width: 1000px
