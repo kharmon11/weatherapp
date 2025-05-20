@@ -33,13 +33,16 @@ function Body() {
             const res = await axios.get(`${API_BASE_URL}/api/openweathermap`, {params: {location}})
             // const currentTime = currentDatetimeString(res.data.current.dt, res.data.timezone)
             setWeather(res.data)
-            console.log(res.data)
+            if (import.meta.env.MODE === "development") {
+                console.log(res.data)
+            }
             if (updateLocationInput) {
                 setLocation(res.data.location_text)
             }
             // setError(null)
         } catch (err) {
             console.log(err)
+            alert("Error occurred while retrieving weather data. Try again later.")
         }
     }
 
@@ -51,17 +54,20 @@ function Body() {
     // Handle when #my-location-btn is clicked
     const handleMyLocation = () => {
         navigator.geolocation.getCurrentPosition(async position => {
-            console.log(position.coords)
+            if (import.meta.env.MODE === "development") {
+                console.log(position.coords)
+            }
             const location = `${position.coords.latitude},${position.coords.longitude}`
             await apiCall(location, true)
         }, err => {
             console.error("Geolocation Error: ", err)
+            alert("Geolocation Error: Geolocation services are not working right now. Try again later.")
         })
     }
 
     return (
         <main className="main">
-            <h1>WeatherApp</h1>
+            <h1>Weather</h1>
             <div className={"location-form panel"}>
                 <div className={"location-form-header"}>Enter Location</div>
                 <input id="location-input" className={"location-input"} type="text" placeholder={"Enter Location"}

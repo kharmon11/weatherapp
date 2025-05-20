@@ -7,7 +7,7 @@ async def geocode(address: str) -> dict:
     base_url = "https://maps.googleapis.com/maps/api/geocode/json?"
     params = {
         "address": address,
-        "key": settings.GOOGLEMAPS_API_KEY
+        "key": settings.GOOGLEMAPS_GEOCODING_KEY
     }
 
     async with httpx.AsyncClient() as client:
@@ -33,4 +33,5 @@ async def geocode(address: str) -> dict:
             return {"location_text": location_text, "lat": lat, "lat_string": lat_string, "lon_string": lon_string,
                     "lon": lon}
         else:
+            print("Google Maps Error: " + data.get("status"))
             raise HTTPException(status_code=404, detail="Geocoding error")
