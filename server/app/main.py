@@ -1,9 +1,15 @@
 import os
-from dotenv import load_dotenv
+import logging
+# from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from .api.openweathermap import router as openweathermap_router
+
+logging.basicConfig(
+    level=logging.INFO,  # Or DEBUG for more detail
+    format="%(levelname)s: %(asctime)s - %(name)s - %(message)s",
+)
 
 app = FastAPI()
 ENV = os.getenv("ENV")
@@ -20,13 +26,12 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-if ENV == "production":
-    frontend_path = os.path.join(os.path.dirname(__file__), "../client-dist")
-    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="static")
-
-@app.get("/")
-async def root():
-    return {"message": "Backend Running & Serving Frontend"}
-
 # /api/openweathermap endpoint
 app.include_router(openweathermap_router, prefix="/api")
+print("OpenWeatherMap router registered at /api")
+
+if ENV == "production":
+    frontend_path = os.path.join(os.path.dirname(__file__), "dist")  # No extra "../"
+    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="static")
+
+

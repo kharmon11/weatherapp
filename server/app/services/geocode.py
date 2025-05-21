@@ -1,6 +1,9 @@
 import httpx
+import logging
 from fastapi import HTTPException
 from ..core.config import settings
+
+logger = logging.getLogger(__name__)
 
 
 async def geocode(address: str) -> dict:
@@ -14,7 +17,9 @@ async def geocode(address: str) -> dict:
         resp = await client.get(base_url, params=params)
         data = resp.json()
 
-        if data.get("status") == "OK":
+        status = data.get("status")
+
+        if status == "OK":
             # Build location_text with form: city, state, country
             for component in data["results"][0]["address_components"]:
                 if "locality" in component["types"]:
@@ -32,6 +37,9 @@ async def geocode(address: str) -> dict:
             lon_string = str(round(lon, 2)) + " \u00B0E" if lat >= 0 else str(round(lon, 2)) + " \u00B0W"
             return {"location_text": location_text, "lat": lat, "lat_string": lat_string, "lon_string": lon_string,
                     "lon": lon}
+        elif status == "ZERO_RESULTS":
+            logger.warning(f"Geocoding Error: ZERO_RESULTS for '{address}'")
+            raise HTTPException(status_code=404, detail="Geocoding Error: No results found for that location")
         else:
-            print("Google Maps Error: " + data.get("status"))
-            raise HTTPException(status_code=404, detail="Geocoding error")
+            logger.error(f"Geocoding API error for location '{address}': status={status}, response={data}")
+            raise HTTPException(status_code=500, detail="Geocoding error: internal server error.")
