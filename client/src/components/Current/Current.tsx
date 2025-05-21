@@ -47,7 +47,9 @@ const Current:React.FC<CurrentProps> = ({current, timezone, location_text}) => {
                     <WindVane windDirection={current.wind_deg}/>
                     <div className={"current-wind-speeds subpanel"}>
                         <div>Speed: {Math.round(current.wind_speed)}mph</div>
-                        <div>Gusts: {Math.round(current.wind_gust)}mph</div>
+                        {current.wind_gust !== undefined && (
+                            <div>Gusts: {Math.round(current.wind_gust)}mph</div>
+                        )}
                     </div>
                 </div>
                 <div className={"current-weather-other"}>
