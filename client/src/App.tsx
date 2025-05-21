@@ -42,7 +42,17 @@ function Body() {
             // setError(null)
         } catch (err) {
             console.log(err)
-            alert("Error occurred while retrieving weather data. Try again later.")
+            if (axios.isAxiosError(err)) {
+                console.error(err.response)
+                if (err.response) {
+                    if (err.response.status === 404)
+                    alert("Geocoding error. Try a different location name.")
+                } else {
+                    alert("Server error. Try again later.")
+                }
+            } else {
+                alert("Error occurred while retrieving weather data. Try again later.")
+            }
         }
     }
 
