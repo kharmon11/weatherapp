@@ -57,7 +57,8 @@ function Body() {
     }
 
     // Handle when #location-submit button is clicked
-    const handleSubmit = async () => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
         await apiCall(location)
     }
 
@@ -78,14 +79,14 @@ function Body() {
     return (
         <main className="main">
             <h1>Weather</h1>
-            <div className={"location-form panel"}>
+            <form className={"location-form panel"} onSubmit={handleSubmit}>
                 <div className={"location-form-header"}>Enter Location</div>
                 <input id="location-input" className={"location-input"} type="text" placeholder={"Enter Location"}
                        value={location}
                        onChange={handleInput}/>
-                <button id={"location-submit"} onClick={handleSubmit}>Submit</button>
-                <button id={"my-location-btn"} onClick={handleMyLocation}><MdMyLocation/>My Location</button>
-            </div>
+                <button id={"location-submit"} type={"submit"}>Submit</button>
+                <button id={"my-location-btn"} type={"button"} onClick={handleMyLocation}><MdMyLocation/>My Location</button>
+            </form>
             {weather && (
                 <div className={"weather-output"}>
                     <div className={"current-wrapper"}>
