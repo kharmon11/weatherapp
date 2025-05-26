@@ -1,0 +1,47 @@
+.location-form
+  margin: 0 auto
+  max-width: 800px
+
+  .location-form-header
+    font-size: 1.5rem
+
+  input
+    font-size: 1.5rem
+    width: 300px
+    background-color: #FFF8DC
+    color: black
+    border: 3px solid #FFC107
+    border-radius: 5px
+
+  input:focus
+    border: 3px solid #FFD700
+    outline: none
+
+.current-wrapper
+  max-width: 100vw
+  width: 100%
+  margin: 20px auto
+  display: flex
+  flex-direction: column
+  flex-wrap: wrap
+  justify-content: space-evenly
+
+.google-map
+  width: 350px
+  display: flex
+  flex-direction: column
+  justify-content: center
+  align-items: center
+
+  .coordinates
+    font-size: 0.7rem
+    color: #666
+
+@media (min-width: 768px)
+
+  .current-wrapper
+    flex-direction: column
+
+@media (min-width: 1400px)
+  .current-wrapper
+    flex-direction: row

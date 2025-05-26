@@ -1,12 +1,11 @@
 import './WindVane.sass'
 import {useState, useEffect} from 'react'
-import React from 'react'
 
 interface WindVaneProps {
     windDirection: number
 }
 
-const WindVane: React.FC<WindVaneProps> = ({windDirection}) => {
+export default function WindVane({windDirection}: WindVaneProps) {
     const [adjustedRotation, setAdjustedRotation] = useState(windDirection)
 
     useEffect(() => {
@@ -43,5 +42,3 @@ const WindVane: React.FC<WindVaneProps> = ({windDirection}) => {
         </div>
     )
 }
-
-export default WindVane

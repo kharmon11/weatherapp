@@ -1,4 +1,3 @@
-import React from 'react';
 import {APIProvider, Map, AdvancedMarker} from "@vis.gl/react-google-maps";
 
 interface GoogleMapProps {
@@ -6,7 +5,7 @@ interface GoogleMapProps {
     lon: number;
 }
 
-const GoogleMap: React.FC<GoogleMapProps> = ({lat, lon}) => {
+export default function GoogleMap({lat, lon}: GoogleMapProps) {
     const center = {lat: lat, lng: lon}
     return (
         <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_JAVASCRIPT_KEY}
@@ -23,4 +22,3 @@ const GoogleMap: React.FC<GoogleMapProps> = ({lat, lon}) => {
     )
 }
 
-export default GoogleMap;

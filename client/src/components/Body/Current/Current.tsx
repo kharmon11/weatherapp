@@ -1,8 +1,7 @@
 import './Current.sass';
-import React from 'react';
-import WindVane from "./WindVane/WindVane.tsx";
+import WindVane from "./WindVane.tsx";
 
-import type {CurrentWeather} from "../../types/openweathermap.ts";
+import type {CurrentWeather} from "../../../types/openweathermap.ts";
 
 interface CurrentProps {
     current: CurrentWeather;
@@ -22,7 +21,7 @@ const currentDatetimeString = (dt: number, timezone: string) => {
     return `${datetimeString} ${timeZoneAbbreviation}`
 }
 
-const Current:React.FC<CurrentProps> = ({current, timezone, location_text}) => {
+export default function Current({current, timezone, location_text}: CurrentProps) {
     return (
         <div className="current panel">
             <div className={"data-info"}>
@@ -32,7 +31,8 @@ const Current:React.FC<CurrentProps> = ({current, timezone, location_text}) => {
             <div className={"current-weather"}>
                 <div className={"current-temp-humidity"}>
                     <div className={"temp-circle"}>
-                        <div className={"temp-display"} title={`Current temperature ${Math.round(current.temp)}\u00B0F`}>{Math.round(current.temp)}&deg;</div>
+                        <div className={"temp-display"}
+                             title={`Current temperature ${Math.round(current.temp)}\u00B0F`}>{Math.round(current.temp)}&deg;</div>
                         <div className={"feels-like-display"}>
                                     <span
                                         className={"feels-like-text"}>FEELS</span> {Math.round(current.feels_like)}&deg;
@@ -55,7 +55,8 @@ const Current:React.FC<CurrentProps> = ({current, timezone, location_text}) => {
                 <div className={"current-weather-other"}>
                     <div className={"current-conditions-description"}>
                         {current.weather[0].description}
-                        <img alt={`Current conditions: ${current.weather[0].description}`} title={`${current.weather[0].description}`}
+                        <img alt={`Current conditions: ${current.weather[0].description}`}
+                             title={`${current.weather[0].description}`}
                              src={`https://openweathermap.org/img/wn/${current.weather[0].icon}.png`}/>
                     </div>
                     <div className={"current-other-data subpanel"}>
@@ -67,5 +68,3 @@ const Current:React.FC<CurrentProps> = ({current, timezone, location_text}) => {
         </div>
     )
 }
-
-export default Current;
