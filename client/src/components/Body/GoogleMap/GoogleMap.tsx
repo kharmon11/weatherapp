@@ -12,9 +12,10 @@ export default function GoogleMap({lat, lon}: GoogleMapProps) {
                      onLoad={() => console.log("Maps API has loaded")}>
             <Map
                 defaultZoom={10}
-                center={{lat: lat, lng: lon}}
+                defaultCenter={{lat: lat, lng: lon}}
                 style={{width: "300px", height: "300px"}}
                 mapId={import.meta.env.VITE_GOOGLE_MAPS_MAP_ID}
+                zoomControl={true}
             >
                 <AdvancedMarker position={center} title="Center"/>
             </Map>
