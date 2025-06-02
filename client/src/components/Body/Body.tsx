@@ -1,16 +1,15 @@
 import './Body.sass'
 import React, {useState} from "react";
+import type {MapMouseEvent} from "@vis.gl/react-google-maps";
+import weatherService from "../../services/weatherService.ts";
 import type {OpenWeatherMapResponse} from "../../types/openweathermap.ts";
-import axios from "axios";
 import LocationForm from "./LocationForm/LocationForm.tsx";
 import Current from "./Current/Current.tsx";
 import GoogleMap from "./GoogleMap/GoogleMap.tsx";
 
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
 export default function Body() {
     const [location, setLocation] = useState("")
+    // const [coords, setCoords] = useState({}) // { lat: number, lon: number }
     const [weather, setWeather] = useState<OpenWeatherMapResponse | null>(null)
     // const [error, setError] = useState(null)
 
@@ -19,30 +18,10 @@ export default function Body() {
 
     // Handle API calls to /api/openweathermap
     const apiCall = async (location: string, updateLocationInput = false) => {
-        try {
-            const res = await axios.get(`${API_BASE_URL}/api/openweathermap`, {params: {location}})
-            // const currentTime = currentDatetimeString(res.data.current.dt, res.data.timezone)
-            setWeather(res.data)
-            if (import.meta.env.MODE === "development") {
-                console.log(res.data)
-            }
-            if (updateLocationInput) {
-                setLocation(res.data.location_text)
-            }
-            // setError(null)
-        } catch (err) {
-            console.log(err)
-            if (axios.isAxiosError(err)) {
-                console.error(err.response)
-                if (err.response) {
-                    if (err.response.status === 404)
-                        alert("Geocoding error. Try a different location name.")
-                } else {
-                    alert("Server error. Try again later.")
-                }
-            } else {
-                alert("Error occurred while retrieving weather data. Try again later.")
-            }
+        const weatherData = await weatherService(location)
+        setWeather(weatherData)
+        if (updateLocationInput) {
+            setLocation(weatherData.location_text)
         }
     }
 
@@ -66,6 +45,17 @@ export default function Body() {
         })
     }
 
+    const handleMapClick = async (event: MapMouseEvent) => {
+        const coords= event.detail.latLng
+        if (coords) {
+            const location = `${coords.lat},${coords.lng}`
+            await apiCall(location)
+        } else {
+            alert("Google Map error: Try again later")
+        }
+
+    }
+
     return (
         <main className="main">
             <h1>Weather</h1>
@@ -80,7 +70,8 @@ export default function Body() {
                             <div className={"coordinates"}>
                                 lat: {weather.lat_string}, lon: {weather.lon_string}
                             </div>
-                            <GoogleMap lat={weather.data.lat} lon={weather.data.lon}/>
+                            <GoogleMap lat={weather.data.lat} lon={weather.data.lon} handleMapClick={handleMapClick}/>
+                            <div>Click on map to get forecast</div>
                         </div>
                     </div>
                 </div>
