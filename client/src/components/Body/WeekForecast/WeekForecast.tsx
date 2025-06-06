@@ -48,8 +48,8 @@ export default function WeekForecast({daily, timezone}: WeekForecastProps) {
                     </div>
                     <div className={"day-wind"}>
                         <span className={"day-forecast-label"}>Wind/Gust: </span>
-                        <span className={"day-forecast-wind"}>{Math.round(day.wind_speed)}</span> / <span
-                        className={"day-forecast-wind"}>{Math.round(day.wind_gust)}</span>
+                        <span className={"day-forecast-wind"}>{Math.round(day.wind_speed)}</span>mph / <span
+                        className={"day-forecast-wind"}>{Math.round(day.wind_gust)}</span>mph
                     </div>
                     <div className={"day-summary"}>
                         <OpenWeatherMapIcon description={day.weather[0].description} icon={day.weather[0].icon}
