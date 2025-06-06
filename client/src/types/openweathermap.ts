@@ -1,6 +1,10 @@
+
+
 export interface WeatherConditions {
     description: string;
     icon: string;
+    id: number;
+    main: string;
 }
 
 export interface CurrentWeather {
@@ -21,6 +25,45 @@ export interface CurrentWeather {
     weather: WeatherConditions[];
 }
 
+export interface FeelsLike {
+    day: number;
+    eve: number;
+    morn: number;
+    night: number;
+}
+
+export interface DailyTemp {
+    day: number;
+    eve: number;
+    max: number;
+    min: number;
+    morn: number;
+    night: number;
+}
+
+export interface DailyForecast {
+    clouds: number;
+    dew_point: number;
+    dt: number;
+    feels_like: FeelsLike;
+    humidity: number;
+    moon_phase: number;
+    moon_rise: number;
+    moon_set: number;
+    pop: number;
+    pressure: number;
+    summary: string;
+    sunrise: number;
+    sunset: number;
+    temp: DailyTemp;
+    uvi: number;
+    weather: WeatherConditions[];
+    wind_deg: number;
+    wind_speed: number;
+    wind_gust: number;
+    wind_dir: number;
+}
+
 export interface WeatherData {
     lat: number;
     lon: number;
@@ -28,7 +71,7 @@ export interface WeatherData {
     timezone_offset: number;
     current: CurrentWeather;
     // Include these only if you start using them:
-    // daily: DailyForecast[];
+    daily: DailyForecast[];
     // hourly: HourlyForecast[];
     // minutely: MinutelyForecast[];
 }

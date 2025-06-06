@@ -1,5 +1,6 @@
 import './Current.sass';
 import WindVane from "./WindVane.tsx";
+import OpenWeatherMapIcon from "../../common/OpenWeatherMapIcon.tsx";
 
 import type {CurrentWeather} from "../../../types/openweathermap.ts";
 
@@ -55,9 +56,7 @@ export default function Current({current, timezone, location_text}: CurrentProps
                 <div className={"current-weather-other"}>
                     <div className={"current-conditions-description"}>
                         {current.weather[0].description}
-                        <img alt={`Current conditions: ${current.weather[0].description}`}
-                             title={`${current.weather[0].description}`}
-                             src={`https://openweathermap.org/img/wn/${current.weather[0].icon}.png`}/>
+                        <OpenWeatherMapIcon description={`Current conditions: ${current.weather[0].description}`} icon={current.weather[0].icon}/>
                     </div>
                     <div className={"current-other-data subpanel"}>
                         <div>Clouds: {current.clouds}%</div>

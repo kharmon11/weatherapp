@@ -1,3 +1,4 @@
+import './LocationForm.sass'
 import React from "react";
 import {MdMyLocation} from "react-icons/md";
 

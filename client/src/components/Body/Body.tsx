@@ -6,12 +6,11 @@ import type {OpenWeatherMapResponse} from "../../types/openweathermap.ts";
 import LocationForm from "./LocationForm/LocationForm.tsx";
 import Current from "./Current/Current.tsx";
 import GoogleMap from "./GoogleMap/GoogleMap.tsx";
+import WeekForecast from "./WeekForecast/WeekForecast.tsx"
 
 export default function Body() {
     const [location, setLocation] = useState("")
-    // const [coords, setCoords] = useState({}) // { lat: number, lon: number }
     const [weather, setWeather] = useState<OpenWeatherMapResponse | null>(null)
-    // const [error, setError] = useState(null)
 
     // Sets location state whenever user changes value of #location-input field
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => setLocation(e.target.value)
@@ -74,6 +73,7 @@ export default function Body() {
                             <div>Click on map to get forecast</div>
                         </div>
                     </div>
+                    <WeekForecast daily={weather.data.daily} timezone={weather.data.timezone}/>
                 </div>
             )}
         </main>
