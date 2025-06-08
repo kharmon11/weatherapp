@@ -23,7 +23,11 @@ export default function WeekForecast({daily, timezone}: WeekForecastProps) {
         <div className={"week-forecast panel"}>
             {daily.map((day) => (
                 <div className={"day-forecast"} key={day.dt}>
-                    <div className={"day-datetime"}>{dateTimeString(day.dt, timezone)}</div>
+                    <div className={"day-datetime"}>
+                        {dateTimeString(day.dt, timezone)}
+                        <OpenWeatherMapIcon description={day.weather[0].description} icon={day.weather[0].icon}
+                                            style={openWeatherMapIconStyle}/>
+                    </div>
                     <div className={"day-temp-moisture-wrapper"}>
                         <div className={"day-forecast-temps"}>
                             <div className={"day-forecast-data"} title={"High temperature"}>
@@ -50,10 +54,6 @@ export default function WeekForecast({daily, timezone}: WeekForecastProps) {
                         <span className={"day-forecast-label"}>Wind/Gust: </span>
                         <span className={"day-forecast-wind"}>{Math.round(day.wind_speed)}</span>mph / <span
                         className={"day-forecast-wind"}>{Math.round(day.wind_gust)}</span>mph
-                    </div>
-                    <div className={"day-summary"}>
-                        <OpenWeatherMapIcon description={day.weather[0].description} icon={day.weather[0].icon}
-                                            style={openWeatherMapIconStyle}/>{day.summary}
                     </div>
                 </div>
             ))}
