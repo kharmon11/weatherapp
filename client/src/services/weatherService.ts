@@ -15,12 +15,12 @@ const weatherService = async (location: string) => {
             console.error(err.response)
             if (err.response) {
                 if (err.response.status === 404)
-                    alert("Geocoding error. Try a different location name.")
+                    throw {error_type: err.response.data.detail.error_type, message: err.response.data.detail.message}
             } else {
-                alert("Server error. Try again later.")
+                throw {error_type: "server error", message: "Server error"};
             }
         } else {
-            alert("Error occurred while retrieving weather data. Try again later.")
+            throw {error_type: "server error", message: "Error while retrieving weather data. Try again later."};
         }
     }
 }

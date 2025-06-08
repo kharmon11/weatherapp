@@ -4,15 +4,18 @@ import {MdMyLocation} from "react-icons/md";
 
 interface LocationFormProps {
     location: string;
+    locationError: string;
     handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
     handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
     handleMyLocation: () => void;
 }
 
-export default function LocationForm({location, handleInput, handleSubmit, handleMyLocation}: LocationFormProps) {
-
+export default function LocationForm({location, locationError, handleInput, handleSubmit, handleMyLocation}: LocationFormProps) {
     return (
         <form className={"location-form panel"} onSubmit={handleSubmit}>
+            {locationError && (
+                <div className={"geolocation-error"}>{locationError}</div>
+            )}
             <div className={"location-form-header"}>Enter Location</div>
             <input id="location-input" className={"location-input"} type="text" placeholder={"Enter Location"}
                    value={location}

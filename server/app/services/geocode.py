@@ -39,7 +39,7 @@ async def geocode(address: str) -> dict:
                     "lon": lon}
         elif status == "ZERO_RESULTS":
             logger.warning(f"Geocoding Error: ZERO_RESULTS for '{address}'")
-            raise HTTPException(status_code=404, detail="Geocoding Error: No results found for that location")
+            raise HTTPException(status_code=404, detail={"error_type": "geocoding", "message": "No results for that location"})
         else:
             logger.error(f"Geocoding API error for location '{address}': status={status}, response={data}")
-            raise HTTPException(status_code=500, detail="Geocoding error: internal server error.")
+            raise HTTPException(status_code=500, detail={"error_type": "geocoding", "message": "Internal server error"})

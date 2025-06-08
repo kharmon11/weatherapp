@@ -11,17 +11,32 @@ import WeekForecast from "./WeekForecast/WeekForecast.tsx"
 export default function Body() {
     const [location, setLocation] = useState("")
     const [weather, setWeather] = useState<OpenWeatherMapResponse | null>(null)
+    const [locationError, setLocationError] = useState("")
+    const [googleMapError, setGoogleMapError] = useState(false)
 
     // Sets location state whenever user changes value of #location-input field
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => setLocation(e.target.value)
 
     // Handle API calls to /api/openweathermap
     const apiCall = async (location: string, updateLocationInput = false) => {
-        const weatherData = await weatherService(location)
-        setWeather(weatherData)
-        if (updateLocationInput) {
-            setLocation(weatherData.location_text)
+        try {
+            const weatherData = await weatherService(location)
+            resetErrorMessages()
+            setWeather(weatherData)
+            if (updateLocationInput) {
+                setLocation(weatherData.location_text)
+            }
+        } catch (err) {
+            const error = err as { error_type: string, message: string }
+            setLocationError(error.message)
         }
+
+    }
+
+    // Reset all error messages
+    const resetErrorMessages = () => {
+        setLocationError("")
+        setGoogleMapError(false)
     }
 
     // Handle when #location-submit button is clicked
@@ -37,28 +52,48 @@ export default function Body() {
                 console.log(position.coords)
             }
             const location = `${position.coords.latitude},${position.coords.longitude}`
+            resetErrorMessages()
             await apiCall(location, true)
         }, err => {
             console.error("Geolocation Error: ", err)
-            alert("Geolocation Error: Geolocation services are not working right now. Try again later.")
+            switch (err.code) {
+                case err.PERMISSION_DENIED:
+                    setLocationError("Browser is refusing access to your location. Change your settings")
+                    break;
+                case err.POSITION_UNAVAILABLE:
+                    setLocationError("Location unavailable. Your device could not determine your location.")
+                    break;
+                case err.TIMEOUT:
+                    setLocationError("Location request timed out. Try again in a moment.")
+                    break;
+                default:
+                    setLocationError("An unknown error occurred.")
+            }
         })
     }
 
     const handleMapClick = async (event: MapMouseEvent) => {
-        const coords= event.detail.latLng
+        const coords = event.detail.latLng
         if (coords) {
             const location = `${coords.lat},${coords.lng}`
             await apiCall(location)
         } else {
-            alert("Google Map error: Try again later")
+            setGoogleMapError(true)
         }
+    }
+
+    const googleMapErrorStyle = {
+        display: googleMapError ? "block" : "none",
+        color: "#c00",
+        fontSize: "0.9rem"
 
     }
 
     return (
         <main className="main">
             <h1>Weather</h1>
-            <LocationForm location={location} handleInput={handleInput} handleSubmit={handleSubmit}
+            <LocationForm location={location} locationError={locationError} handleInput={handleInput}
+                          handleSubmit={handleSubmit}
                           handleMyLocation={handleMyLocation}/>
             {weather && (
                 <div className={"weather-output"}>
@@ -68,6 +103,9 @@ export default function Body() {
                         <div className={"google-map panel"}>
                             <div className={"coordinates"}>
                                 lat: {weather.lat_string}, lon: {weather.lon_string}
+                            </div>
+                            <div className={"google-map-error"} style={googleMapErrorStyle}>
+                                Unable to retrieve coordinates from map. Please try again later.
                             </div>
                             <GoogleMap lat={weather.data.lat} lon={weather.data.lon} handleMapClick={handleMapClick}/>
                             <div>Click on map to get forecast</div>
