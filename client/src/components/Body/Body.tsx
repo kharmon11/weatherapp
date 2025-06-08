@@ -3,16 +3,20 @@ import React, {useState} from "react";
 import type {MapMouseEvent} from "@vis.gl/react-google-maps";
 import weatherService from "../../services/weatherService.ts";
 import type {OpenWeatherMapResponse} from "../../types/openweathermap.ts";
+import Spinner from "../common/spinner.tsx"
 import LocationForm from "./LocationForm/LocationForm.tsx";
 import Current from "./Current/Current.tsx";
 import GoogleMap from "./GoogleMap/GoogleMap.tsx";
 import WeekForecast from "./WeekForecast/WeekForecast.tsx"
+
+
 
 export default function Body() {
     const [location, setLocation] = useState("")
     const [weather, setWeather] = useState<OpenWeatherMapResponse | null>(null)
     const [locationError, setLocationError] = useState("")
     const [googleMapError, setGoogleMapError] = useState(false)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
 
     // Sets location state whenever user changes value of #location-input field
     const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => setLocation(e.target.value)
@@ -20,6 +24,7 @@ export default function Body() {
     // Handle API calls to /api/openweathermap
     const apiCall = async (location: string, updateLocationInput = false) => {
         try {
+            setIsLoading(true)
             const weatherData = await weatherService(location)
             resetErrorMessages()
             setWeather(weatherData)
@@ -29,6 +34,8 @@ export default function Body() {
         } catch (err) {
             const error = err as { error_type: string, message: string }
             setLocationError(error.message)
+        } finally {
+            setIsLoading(false)
         }
 
     }
@@ -47,6 +54,7 @@ export default function Body() {
 
     // Handle when #my-location-btn is clicked
     const handleMyLocation = () => {
+        setIsLoading(true)
         navigator.geolocation.getCurrentPosition(async position => {
             if (import.meta.env.MODE === "development") {
                 console.log(position.coords)
@@ -55,6 +63,7 @@ export default function Body() {
             resetErrorMessages()
             await apiCall(location, true)
         }, err => {
+            setIsLoading(false)
             console.error("Geolocation Error: ", err)
             switch (err.code) {
                 case err.PERMISSION_DENIED:
@@ -95,6 +104,12 @@ export default function Body() {
             <LocationForm location={location} locationError={locationError} handleInput={handleInput}
                           handleSubmit={handleSubmit}
                           handleMyLocation={handleMyLocation}/>
+            {isLoading && (
+                <div className={"spinner-wrapper"}>
+                    <Spinner/>
+                    <div className={"loading-text"}>Loading...</div>
+                </div>
+            )}
             {weather && (
                 <div className={"weather-output"}>
                     <div className={"current-wrapper"}>
