@@ -1,8 +1,8 @@
 import './Current.sass';
 import WindVane from "./WindVane.tsx";
-import OpenWeatherMapIcon from "../../common/OpenWeatherMapIcon.tsx";
+import OpenWeatherMapIcon from "../common/OpenWeatherMapIcon.tsx";
 
-import type {CurrentWeather} from "../../../types/openweathermap.ts";
+import type {CurrentWeather} from "../../types/openweathermap.ts";
 
 interface CurrentProps {
     current: CurrentWeather;

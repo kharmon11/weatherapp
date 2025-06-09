@@ -1,7 +1,7 @@
 import "./WeekForecast.sass"
-import OpenWeatherMapIcon from "../../common/OpenWeatherMapIcon.tsx";
+import OpenWeatherMapIcon from "../common/OpenWeatherMapIcon.tsx";
 
-import type {DailyForecast} from "../../../types/openweathermap.ts";
+import type {DailyForecast} from "../../types/openweathermap.ts";
 
 interface WeekForecastProps {
     daily: DailyForecast[];

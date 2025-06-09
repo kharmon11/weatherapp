@@ -4,10 +4,10 @@ import type {MapMouseEvent} from "@vis.gl/react-google-maps";
 import weatherService from "../../services/weatherService.ts";
 import type {OpenWeatherMapResponse} from "../../types/openweathermap.ts";
 import Spinner from "../common/spinner.tsx"
-import LocationForm from "./LocationForm/LocationForm.tsx";
-import Current from "./Current/Current.tsx";
-import GoogleMap from "./GoogleMap/GoogleMap.tsx";
-import WeekForecast from "./WeekForecast/WeekForecast.tsx"
+import LocationForm from "./LocationForm.tsx";
+import Current from "./Current.tsx";
+import GoogleMap from "./GoogleMap.tsx";
+import WeekForecast from "./WeekForecast.tsx"
 
 
 
