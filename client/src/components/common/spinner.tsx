@@ -35,7 +35,7 @@ export default function Spinner() {
                     attributeType="XML"
                     type="rotate"
                     from="0 50 50"
-                    to="360 50 50"
+                    to="-360 50 50"
                     dur="1s"
                     repeatCount="indefinite"/>
             </g>

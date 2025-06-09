@@ -85,7 +85,7 @@ export default function Body() {
         const coords = event.detail.latLng
         if (coords) {
             const location = `${coords.lat},${coords.lng}`
-            await apiCall(location)
+            await apiCall(location, true)
         } else {
             setGoogleMapError(true)
         }
@@ -122,7 +122,12 @@ export default function Body() {
                             <div className={"google-map-error"} style={googleMapErrorStyle}>
                                 Unable to retrieve coordinates from map. Please try again later.
                             </div>
-                            <GoogleMap lat={weather.data.lat} lon={weather.data.lon} handleMapClick={handleMapClick}/>
+                            <GoogleMap
+                                lat={weather.data.lat}
+                                lon={weather.data.lon}
+                                handleMapClick={handleMapClick}
+                                key={`${weather.data.lat}-${weather.data.lon}`}
+                            />
                             <div>Click on map to get forecast</div>
                         </div>
                     </div>
