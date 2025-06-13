@@ -19,7 +19,6 @@ function Footer() {
 }
 
 function App() {
-
     return (
         <div className="App">
             <Header/>

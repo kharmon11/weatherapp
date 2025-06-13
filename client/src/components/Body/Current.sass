@@ -6,7 +6,6 @@
   justify-content: space-between
 
   .data-info
-    max-width: 600px
     margin-left: auto
     margin-right: auto
     display: flex
@@ -19,6 +18,11 @@
 
     .location-name
       font-size: 1.5rem
+
+    .current-clouds
+      display: flex
+      justify-content: center
+      align-items: center
 
   .current-weather
     width: 100%
@@ -56,12 +60,29 @@
     .current-wind-speeds
       color: #44f
 
-    .current-conditions-description
-      display: flex
-      justify-content: center
-      align-items: center
+  .google-map
+    width: 200px
+    height: 200px
+    display: flex
+    flex-direction: column
+    justify-content: center
+    align-items: center
+    font-size: 0.8rem
 
-@media (min-width: 768px)
+    .google-map-error
+      display: none
+      color: #c00
+      font-size: 0.9rem
+
+      .visible
+        display: block
+
+    .coordinates
+      font-size: 0.7rem
+      color: #666
+
+
+@media (min-width: 800px)
   .current
     min-width: 450px
 
@@ -72,11 +93,17 @@
       min-width: 450px
       flex-direction: row
 
+      .google-map
+        width: 250px
+        height: 250px
+
 @media (min-width: 1400px)
   .current
     min-width: 800px
-    max-width: 1000px
 
     .current-weather
       min-width: 800px
-      max-width: 1000px
+
+      .google-map
+        width: 350px
+        height: 350px

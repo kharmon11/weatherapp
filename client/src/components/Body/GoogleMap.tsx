@@ -15,7 +15,7 @@ export default function GoogleMap({lat, lon, handleMapClick}: GoogleMapProps) {
             <Map
                 defaultZoom={10}
                 defaultCenter={center}
-                style={{width: "300px", height: "300px"}}
+                style={{width: "100%", height: "100%"}}
                 mapId={import.meta.env.VITE_GOOGLE_MAPS_MAP_ID}
                 zoomControl={true}
                 onClick={handleMapClick}

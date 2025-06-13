@@ -1,13 +1,23 @@
 import './Current.sass';
+import type {MapMouseEvent} from "@vis.gl/react-google-maps";
+
 import WindVane from "./WindVane.tsx";
+import GoogleMap from "./GoogleMap.tsx";
 import OpenWeatherMapIcon from "../common/OpenWeatherMapIcon.tsx";
 
+import cloudinessText from "../../utils/cloudinessText.ts";
 import type {CurrentWeather} from "../../types/openweathermap.ts";
 
 interface CurrentProps {
     current: CurrentWeather;
     timezone: string;
     location_text: string;
+    lat: number;
+    lon: number;
+    lat_string: string;
+    lon_string: string;
+    handleMapClick: (event: MapMouseEvent) => void;
+    googleMapError: boolean;
 }
 
 // Create current datetime string
@@ -22,12 +32,23 @@ const currentDatetimeString = (dt: number, timezone: string) => {
     return `${datetimeString} ${timeZoneAbbreviation}`
 }
 
-export default function Current({current, timezone, location_text}: CurrentProps) {
+
+
+export default function Current({current, timezone, location_text, lat, lon, lat_string, lon_string, handleMapClick, googleMapError}: CurrentProps) {
+    const cloudiness = cloudinessText(current.clouds)
     return (
         <div className="current panel">
             <div className={"data-info"}>
                 <span className={"current-time"}>{currentDatetimeString(current.dt, timezone)}</span>
                 <span className={"location-name"}>{location_text}</span>
+                <span className={"current-clouds"}>
+                    {current.weather[0].description}
+                    <OpenWeatherMapIcon
+                        description={`Current conditions: ${current.weather[0].description}`}
+                        icon={current.weather[0].icon}
+                    />
+                    {cloudiness}
+                </span>
             </div>
             <div className={"current-weather"}>
                 <div className={"current-temp-humidity"}>
@@ -53,15 +74,21 @@ export default function Current({current, timezone, location_text}: CurrentProps
                         )}
                     </div>
                 </div>
-                <div className={"current-weather-other"}>
-                    <div className={"current-conditions-description"}>
-                        {current.weather[0].description}
-                        <OpenWeatherMapIcon description={`Current conditions: ${current.weather[0].description}`} icon={current.weather[0].icon}/>
+                <div className={"precip-next-hour"}></div>
+                <div className={"google-map"}>
+                    <div className={"coordinates"}>
+                        lat: {lat_string}, lon: {lon_string}
                     </div>
-                    <div className={"current-other-data subpanel"}>
-                        <div>Clouds: {current.clouds}%</div>
-                        <div>Pressure: {current.pressure}mb</div>
+                    <div className={`google-map-error ${googleMapError? "visible": ""}`}>
+                        Unable to retrieve coordinates from map. Please try again later.
                     </div>
+                    <GoogleMap
+                        lat={lat}
+                        lon={lon}
+                        handleMapClick={handleMapClick}
+                        key={`${lat}-${lon}`}
+                    />
+                    <div>Click on map to get forecast</div>
                 </div>
             </div>
         </div>

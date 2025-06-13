@@ -1,4 +1,10 @@
+export interface Rain {
+    "1h": number;
+}
 
+export interface Snow {
+    "1h": number;
+}
 
 export interface WeatherConditions {
     description: string;
@@ -18,6 +24,8 @@ export interface CurrentWeather {
     dew_point: number;
     uvi: number;
     clouds: number;
+    rain: Rain;
+    snow: Snow
     visibility: number;
     wind_speed: number;
     wind_deg: number;
@@ -52,6 +60,8 @@ export interface DailyForecast {
     moon_set: number;
     pop: number;
     pressure: number;
+    rain: number;
+    snow: number;
     summary: string;
     sunrise: number;
     sunset: number;
@@ -64,6 +74,11 @@ export interface DailyForecast {
     wind_dir: number;
 }
 
+export interface MinutelyForecast {
+    dt: number;
+    precipitation: number;
+}
+
 export interface WeatherData {
     lat: number;
     lon: number;
@@ -73,7 +88,7 @@ export interface WeatherData {
     // Include these only if you start using them:
     daily: DailyForecast[];
     // hourly: HourlyForecast[];
-    // minutely: MinutelyForecast[];
+    minutely: MinutelyForecast[];
 }
 
 export interface OpenWeatherMapResponse {
