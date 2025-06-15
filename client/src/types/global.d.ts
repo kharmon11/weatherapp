@@ -1,3 +1,4 @@
+// cloud.d.ts
 interface ImportMetaEnv {
     readonly VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID?: string;
     readonly VITE_API_BASE_URL: string;
@@ -9,7 +10,12 @@ interface ImportMeta {
     readonly env: ImportMetaEnv;
 }
 
+// More precise Google Analytics types
 interface Window {
     dataLayer: any[];
-    gtag: (...args: any[]) => void;
+    gtag: (
+        command: 'config' | 'event' | 'js' | 'set',
+        targetIdOrConfigOrDate: string | Date | object,
+        config?: object
+    ) => void;
 }
