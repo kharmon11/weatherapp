@@ -24,12 +24,12 @@ export interface CurrentWeather {
     dew_point: number;
     uvi: number;
     clouds: number;
-    rain: Rain;
-    snow: Snow
+    rain?: Rain;
+    snow?: Snow
     visibility: number;
     wind_speed: number;
     wind_deg: number;
-    wind_gust: number;
+    wind_gust?: number;
     weather: WeatherConditions[];
 }
 
@@ -60,8 +60,8 @@ export interface DailyForecast {
     moon_set: number;
     pop: number;
     pressure: number;
-    rain: number;
-    snow: number;
+    rain?: number;
+    snow?: number;
     summary: string;
     sunrise: number;
     sunset: number;
@@ -70,8 +70,7 @@ export interface DailyForecast {
     weather: WeatherConditions[];
     wind_deg: number;
     wind_speed: number;
-    wind_gust: number;
-    wind_dir: number;
+    wind_gust?: number;
 }
 
 export interface MinutelyForecast {
@@ -88,7 +87,7 @@ export interface WeatherData {
     // Include these only if you start using them:
     daily: DailyForecast[];
     // hourly: HourlyForecast[];
-    minutely: MinutelyForecast[];
+    minutely?: MinutelyForecast[];
 }
 
 export interface OpenWeatherMapResponse {

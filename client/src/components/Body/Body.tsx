@@ -53,6 +53,7 @@ export default function Body() {
                     <div className={"current-wrapper"}>
                         <Current
                             current={weather.data.current}
+                            minutely={weather.data.minutely? weather.data.minutely: []}
                             timezone={weather.data.timezone}
                             location_text={weather.location_text}
                             lat={weather.data.lat}

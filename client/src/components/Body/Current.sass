@@ -31,6 +31,23 @@
     align-items: center
     justify-content: space-evenly
 
+    .current-weather-child
+      display: flex
+      flex-direction: column
+      justify-content: center
+      align-items: center
+
+    .current-weather-subpanel
+      background-color: #eed
+      padding: 4px
+      margin: 8px 0
+      border-radius: 10px
+      font-size: 0.8rem
+      font-weight: 700
+
+      .current-weather-label
+        color: #000
+
     .current-temp-humidity
       display: flex
       flex-direction: column
@@ -39,17 +56,17 @@
       .temp-circle
         width: 150px
         height: 150px
-        color: #c00
         font-size: 4rem
+        color: #c00
         border-radius: 50%
         border: 5px solid #222
 
         .temp-display
+          font-size: 4rem
           transform: translateY(20px)
 
         .feels-like-display
           font-size: 0.8rem
-          transform: translateY(20px)
 
           .feels-like-text
             color: #000
@@ -59,6 +76,10 @@
 
     .current-wind-speeds
       color: #44f
+
+    .current-precip
+      width: 250px
+      height: 200px
 
   .google-map
     width: 200px
@@ -81,8 +102,7 @@
       font-size: 0.7rem
       color: #666
 
-
-@media (min-width: 800px)
+@media (min-width: 600px)
   .current
     min-width: 450px
 
@@ -92,6 +112,10 @@
     .current-weather
       min-width: 450px
       flex-direction: row
+      flex-wrap: wrap
+
+      .current-weather-child
+        min-width: 250px
 
       .google-map
         width: 250px
@@ -103,7 +127,30 @@
 
     .current-weather
       min-width: 800px
+      .current-temp-humidity
+        .temp-circle
+          width: 150px
+          height: 150px
+          font-size: 4rem
+
+          .temp-display
+            font-size: 4rem
+            transform: translateY(20px)
+
+            .feels-like-display
+              font-size: 0.8rem
+              transform: translateY(20px)
+
+              .feels-like-text
+                color: #000
+
+      .current-weather-subpanel
+        font-size: 1.2rem
 
       .google-map
         width: 350px
         height: 350px
+
+      .current-precip
+        width: 300px
+        height: 250px

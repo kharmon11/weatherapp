@@ -3,13 +3,18 @@ import type {MapMouseEvent} from "@vis.gl/react-google-maps";
 
 import WindVane from "./WindVane.tsx";
 import GoogleMap from "./GoogleMap.tsx";
+import MinutelyChart from "./MinutelyChart.tsx";
 import OpenWeatherMapIcon from "../common/OpenWeatherMapIcon.tsx";
 
 import cloudinessText from "../../utils/cloudinessText.ts";
-import type {CurrentWeather} from "../../types/openweathermap.ts";
+import rainOrSnow from "../../utils/rainOrSnow.ts";
+import mmInchConvert from "../../utils/mmInchConvert.ts";
+import roundToDecimal from "../../utils/roundToDecimal.ts";
+import type {CurrentWeather, MinutelyForecast} from "../../types/openweathermap.ts";
 
 interface CurrentProps {
     current: CurrentWeather;
+    minutely: MinutelyForecast[];
     timezone: string;
     location_text: string;
     lat: number;
@@ -32,10 +37,20 @@ const currentDatetimeString = (dt: number, timezone: string) => {
     return `${datetimeString} ${timeZoneAbbreviation}`
 }
 
-
-
-export default function Current({current, timezone, location_text, lat, lon, lat_string, lon_string, handleMapClick, googleMapError}: CurrentProps) {
+export default function Current({
+                                    current,
+                                    minutely,
+                                    timezone,
+                                    location_text,
+                                    lat,
+                                    lon,
+                                    lat_string,
+                                    lon_string,
+                                    handleMapClick,
+                                    googleMapError
+                                }: CurrentProps) {
     const cloudiness = cloudinessText(current.clouds)
+
     return (
         <div className="current panel">
             <div className={"data-info"}>
@@ -51,35 +66,58 @@ export default function Current({current, timezone, location_text, lat, lon, lat
                 </span>
             </div>
             <div className={"current-weather"}>
-                <div className={"current-temp-humidity"}>
+                <div className={"current-temp-humidity current-weather-child"}>
                     <div className={"temp-circle"}>
                         <div className={"temp-display"}
                              title={`Current temperature ${Math.round(current.temp)}\u00B0F`}>{Math.round(current.temp)}&deg;</div>
                         <div className={"feels-like-display"}>
-                                    <span
-                                        className={"feels-like-text"}>FEELS</span> {Math.round(current.feels_like)}&deg;
+                            <span className={"feels-like-text"}>FEELS</span> {Math.round(current.feels_like)}&deg;
                         </div>
                     </div>
-                    <div className={"current-humidity subpanel"}>
-                        <div>Dew Point: {Math.round(current.dew_point)}&deg;F</div>
-                        <div>Humidity: {current.humidity}%</div>
+                    <div className={"current-humidity current-weather-subpanel"}>
+                        <div><span className={"current-weather-label"}>Dew Point:</span> {Math.round(current.dew_point)}&deg;F</div>
+                        <div><span className={"current-weather-label"}>Humidity:</span> {current.humidity}%</div>
                     </div>
                 </div>
-                <div className={"current-wind"}>
+                <div className={"current-wind current-weather-child"}>
                     <WindVane windDirection={current.wind_deg}/>
-                    <div className={"current-wind-speeds subpanel"}>
-                        <div>Speed: {Math.round(current.wind_speed)}mph</div>
+                    <div className={"current-wind-speeds current-weather-subpanel"}>
+                        <div>
+                            <span className={"current-weather-label"}>Speed:</span> {Math.round(current.wind_speed)}mph
+                        </div>
                         {current.wind_gust !== undefined && (
-                            <div>Gusts: {Math.round(current.wind_gust)}mph</div>
+                            <div>
+                                <span className={"current-weather-label"}>Gusts:</span> {Math.round(current.wind_gust)}mph
+                            </div>
                         )}
                     </div>
                 </div>
-                <div className={"precip-next-hour"}></div>
-                <div className={"google-map"}>
+                {minutely.length > 0 && minutely.some(minute => minute.precipitation > 0) && (
+                    <div className={"current-precip current-weather-child"}>
+                        {
+                            current.rain?.["1h"] &&
+                            (<div className={"current-rain"}>
+                                Rain: {roundToDecimal(mmInchConvert(current.rain["1h"]), 2)}in/hr
+                            </div>)
+                        }
+                        {
+                            current.snow?.["1h"] &&
+                            (<div className={"current-snow"}>
+                                Snow: {roundToDecimal(mmInchConvert(current.snow["1h"]), 2)}in/hr
+                            </div>)
+                        }
+                        <MinutelyChart
+                            minutes={minutely}
+                            timezone={timezone}
+                            rainSnow={rainOrSnow(current.weather[0].description.toLowerCase())}
+                        />
+                    </div>
+                )}
+                <div className={"google-map current-weather-child"}>
                     <div className={"coordinates"}>
                         lat: {lat_string}, lon: {lon_string}
                     </div>
-                    <div className={`google-map-error ${googleMapError? "visible": ""}`}>
+                    <div className={`google-map-error ${googleMapError ? "visible" : ""}`}>
                         Unable to retrieve coordinates from map. Please try again later.
                     </div>
                     <GoogleMap

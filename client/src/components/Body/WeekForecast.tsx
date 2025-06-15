@@ -46,14 +46,22 @@ export default function WeekForecast({daily, timezone}: WeekForecastProps) {
                             </div>
                             <div className={"day-forecast-data"} title={"Probability of precipitation"}>
                                 <span className={"day-forecast-label"}>Precip: </span>
-                                <span className={"day-forecast-pop"}>{day.pop * 100}%</span>
+                                <span className={"day-forecast-pop"}>{Math.round(day.pop * 100)}%</span>
                             </div>
                         </div>
                     </div>
                     <div className={"day-wind"}>
                         <span className={"day-forecast-label"}>Wind/Gust: </span>
-                        <span className={"day-forecast-wind"}>{Math.round(day.wind_speed)}</span>mph / <span
-                        className={"day-forecast-wind"}>{Math.round(day.wind_gust)}</span>mph
+                        <span className={"day-forecast-wind"}>{Math.round(day.wind_speed)}</span>
+                        <span className={"day-forecast-wind-units"}>mph</span>
+                        {day.wind_gust !== undefined && (
+                            <>
+                                <span className={"day-forecast-wind-units"}> /</span>
+                                <span className={"day-forecast-wind"}> {Math.round(day.wind_gust)}</span>
+                                <span className={"day-forecast-wind-units"}>mph</span>
+                            </>
+                        )}
+
                     </div>
                 </div>
             ))}
