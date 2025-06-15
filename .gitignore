@@ -1,6 +1,7 @@
 ### Custom
 .idea/
 app.yaml
+client/dist
 
 ### VisualStudioCode template
 .vscode/*

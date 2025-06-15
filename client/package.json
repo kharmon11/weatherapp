@@ -1,12 +1,12 @@
 {
   "name": "weatherapp-client",
   "private": true,
-  "version": "1.5.0",
+  "version": "1.5.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && pnpm run move-dist",
-    "move-dist": "rm -rf ../server/app/dist && mv dist ../server/app/dist",
+    "build": "vite build && pnpm run copy-dist",
+    "copy-dist": "rm -rf ../server/app/dist && cp -r dist ../server/app/dist",
     "build0": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
