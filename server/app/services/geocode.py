@@ -20,6 +20,12 @@ async def geocode(address: str) -> dict:
         status = data.get("status")
 
         if status == "OK":
+            # Get latitude and longitude values
+            lat = data["results"][0]["geometry"]["location"]["lat"]
+            lat_string = str(round(lat, 2)) + " \u00B0N" if lat >= 0 else str(round(lat, 2)) + " \u00B0S"
+            lon = data["results"][0]["geometry"]["location"]["lng"]
+            lon_string = str(round(lon, 2)) + " \u00B0E" if lat >= 0 else str(round(lon, 2)) + " \u00B0W"
+
             # Build location_text with form: city, state, country
             for component in data["results"][0]["address_components"]:
                 if "locality" in component["types"]:
@@ -28,13 +34,11 @@ async def geocode(address: str) -> dict:
                     state = component["short_name"]
                 elif "country" in component["types"]:
                     country = component["short_name"]
-            location_text = f"{city}, {state}, {country}"
+            try:
+                location_text = f"{city}, {state}, {country}"
+            except UnboundLocalError as err:
+                location_text = f"{lat_string}, {lon_string}"
 
-            # Get latitude and longitude values
-            lat = data["results"][0]["geometry"]["location"]["lat"]
-            lat_string = str(round(lat, 2)) + " \u00B0N" if lat >= 0 else str(round(lat, 2)) + " \u00B0S"
-            lon = data["results"][0]["geometry"]["location"]["lng"]
-            lon_string = str(round(lon, 2)) + " \u00B0E" if lat >= 0 else str(round(lon, 2)) + " \u00B0W"
             return {"location_text": location_text, "lat": lat, "lat_string": lat_string, "lon_string": lon_string,
                     "lon": lon}
         elif status == "ZERO_RESULTS":
