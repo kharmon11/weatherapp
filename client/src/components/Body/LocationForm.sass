@@ -1,27 +1,68 @@
 .location-form
   margin: 0 auto
   max-width: 800px
+  display: flex
+  flex-direction: column
+  align-items: center
 
   .geolocation-error
     font-size: 0.9rem
     color: #c00
 
-  .location-form-header
-    font-size: 1rem
-    display: inline-block
-    margin: 2px
+  .location-form-controls
+    display: flex
+    flex-direction: column
+    width: 100%
 
-  input
-    font-size: 1.5rem
-    width: 300px
-    background-color: #FFF8DC
-    color: black
-    border: 3px solid #FFC107
-    border-radius: 5px
+    .location-input-wrapper
+      display: flex
+      flex: 1 1 50%
 
-  input:focus
-    border: 3px solid #FFD700
-    outline: none
+      .location-form-header
+        font-size: 1rem
+        display: inline-block
+        margin: 2px
+        max-width: 80px
 
-  @media (min-width: 768px)
-    font-size: 1.5rem
+      .location-input
+        font-size: 1.5rem
+        max-width: 100%
+        width: 100%
+        flex: 1
+        background-color: #FFF8DC
+        color: black
+        border: 3px solid #FFC107
+        border-radius: 5px
+
+        &:focus
+          border: 3px solid #FFD700
+          outline: none
+
+    .location-buttons-wrapper
+      display: flex
+      flex: 1 1 50%
+
+      button
+        flex: 1
+        max-width: 100%
+        display: flex
+        justify-content: center
+        align-items: center
+
+
+@media (min-width: 768px)
+  .location-form
+    .location-form-controls
+      display: flex
+      flex-direction: row
+
+      .location-input-wrapper
+        flex-direction: row
+        max-width: none
+
+        .location-input
+          max-width: 300px
+
+      .location-buttons-wrapper
+        flex: 1 1 50%
+        max-width: 100%
