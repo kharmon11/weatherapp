@@ -13,8 +13,11 @@ logging.basicConfig(
 
 app = FastAPI()
 ENV = os.getenv("ENV")
+
 if ENV == "production":
-    origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split(",")
+    origins = os.getenv("ALLOWED_ORIGINS").split(",")
+    if not origins or origins == [""]:
+        raise ValueError("ALLOWED_ORIGINS environment variable must be set in production")
 else:
     origins = ["http://localhost:5173", "localhost:5173"]
 
