@@ -1,70 +1,46 @@
 import "./WeekForecast.sass"
-import OpenWeatherMapIcon from "../common/OpenWeatherMapIcon.tsx";
+import React from "react"
+import DailyForecasts from "./DailyForecasts"
 
-import type {DailyForecast} from "../../types/openweathermap.ts";
+import type {DailyForecast} from "../../../types/openweathermap.ts";
+import WeekGraphs from "./WeekGraphs";
 
 interface WeekForecastProps {
     daily: DailyForecast[];
     timezone: string;
 }
 
-const dateTimeString = (dt: number, timezone: string) => {
-    const date = new Date(dt * 1000)
-    return date.toLocaleString("en-US", {timeZone: timezone, month: "short", day: "numeric", weekday: "short"})
-}
-
-const openWeatherMapIconStyle = {
-    background: "rgba(100, 100, 255, 0.2)",
-    borderRadius: "20px"
-}
-
 export default function WeekForecast({daily, timezone}: WeekForecastProps) {
+
+    const weekForecastClickHandler = (event: React.MouseEvent<HTMLDivElement>) => {
+        const parent = event.currentTarget.closest(".week-forecast");
+        if (!parent) return
+
+        const btns = parent.querySelectorAll(".week-forecast-btn")
+        btns.forEach(btn => {
+            btn.classList.toggle("week-forecast-btn-active")
+            btn.classList.toggle("week-forecast-btn-inactive")
+        })
+
+        const panels = parent.querySelectorAll(".week-forecast-panel")
+        panels.forEach(panel => {
+            panel.classList.toggle("week-forecast-panel-active")
+            panel.classList.toggle("week-forecast-panel-inactive")
+        })
+    }
+
     return (
         <div className={"week-forecast panel"}>
-            {daily.map((day) => (
-                <div className={"day-forecast"} key={day.dt}>
-                    <div className={"day-datetime"}>
-                        {dateTimeString(day.dt, timezone)}
-                        <OpenWeatherMapIcon description={day.weather[0].description} icon={day.weather[0].icon}
-                                            style={openWeatherMapIconStyle}/>
-                    </div>
-                    <div className={"day-temp-moisture-wrapper"}>
-                        <div className={"day-forecast-temps"}>
-                            <div className={"day-forecast-data"} title={"High temperature"}>
-                                <span className={"day-forecast-label"}>Hi: </span>
-                                <span className={"day-forecast-temp-high"}>{Math.round(day.temp.max)}&deg;F</span>
-                            </div>
-                            <div className={"day-forecast-data"} title={"Low temperature"}>
-                                <span className={"day-forecast-label"}>Lo: </span>
-                                <span className={"day-forecast-temp-low"}>{Math.round(day.temp.min)}&deg;F</span>
-                            </div>
-                        </div>
-                        <div className={"day-forecast-moisture"}>
-                            <div className={"day-forecast-data"} title={"Dewpoint"}>
-                                <span className={"day-forecast-label"}>Dew: </span>
-                                <span className={"day-forecast-dewpoint"}>{Math.round(day.dew_point)}&deg;F</span>
-                            </div>
-                            <div className={"day-forecast-data"} title={"Probability of precipitation"}>
-                                <span className={"day-forecast-label"}>Precip: </span>
-                                <span className={"day-forecast-pop"}>{Math.round(day.pop * 100)}%</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div className={"day-wind"}>
-                        <span className={"day-forecast-label"}>Wind/Gust: </span>
-                        <span className={"day-forecast-wind"}>{Math.round(day.wind_speed)}</span>
-                        <span className={"day-forecast-wind-units"}>mph</span>
-                        {day.wind_gust !== undefined && (
-                            <>
-                                <span className={"day-forecast-wind-units"}> /</span>
-                                <span className={"day-forecast-wind"}> {Math.round(day.wind_gust)}</span>
-                                <span className={"day-forecast-wind-units"}>mph</span>
-                            </>
-                        )}
-
-                    </div>
-                </div>
-            ))}
+            <div className={"week-forecast-toggle"}>
+                <div onClick={weekForecastClickHandler} className={"week-forecast-btn week-forecast-btn week-forecast-btn-active"}>Forecast</div>
+                <div onClick={weekForecastClickHandler} className={"week-graphs-btn week-forecast-btn week-forecast-btn-inactive"}>Graphs</div>
+            </div>
+            <div className={"daily-forecasts-wrapper week-forecast-panel week-forecast-panel-active"}>
+                <DailyForecasts daily={daily} timezone={timezone}/>
+            </div>
+            <div className={"daily-graphs-wrapper week-forecast-panel week-forecast-panel-inactive"}>
+                <WeekGraphs daily={daily} timezone={timezone}/>
+            </div>
         </div>
     )
 }
