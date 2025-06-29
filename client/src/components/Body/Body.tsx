@@ -2,7 +2,7 @@ import './Body.sass'
 import type {MapMouseEvent} from "@vis.gl/react-google-maps";
 
 import useWeather from "../../hooks/useWeather.tsx"
-import Spinner from "../common/spinner.tsx"
+import Spinner from "../common/Spinner.tsx"
 import LocationForm from "./LocationForm.tsx";
 import Current from "./Current.tsx";
 import WeekForecast from "./WeekForecast.tsx"
@@ -43,10 +43,7 @@ export default function Body() {
                 handleMyLocation={handleMyLocation}
             />
             {isLoading && (
-                <div className={"spinner-wrapper"}>
-                    <Spinner/>
-                    <div className={"loading-text"}>Loading...</div>
-                </div>
+                <Spinner/>
             )}
             {weather && (
                 <div className={"weather-output"}>
