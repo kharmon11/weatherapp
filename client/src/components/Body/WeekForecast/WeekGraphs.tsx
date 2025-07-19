@@ -58,7 +58,6 @@ export default function WeekGraphs({daily, timezone}: WeekForecastProps) {
           <YAxis
             label={{ value: '\u00B0F', angle: -90, position: 'insideLeft', offset: 10 }}
           />
-          <Tooltip/>
           <Legend/>
 
           <Bar
@@ -81,6 +80,7 @@ export default function WeekGraphs({daily, timezone}: WeekForecastProps) {
             name={"Dew Point"}
             dot={{r: 8}}
           />
+          <Tooltip/>
         </ComposedChart>
       </ResponsiveContainer>
       <h3 className={"daily-forecast-graph-title"}>Wind Speed and Gusts</h3>
@@ -90,7 +90,6 @@ export default function WeekGraphs({daily, timezone}: WeekForecastProps) {
           <YAxis
             label={{ value: 'mph', angle: -90, position: 'insideLeft', offset: 10 }}
           />
-          <Tooltip/>
           <Legend/>
           <Line
             dataKey="windSpeed"
@@ -107,6 +106,7 @@ export default function WeekGraphs({daily, timezone}: WeekForecastProps) {
               connectNulls
             />
           )}
+          <Tooltip/>
         </LineChart>
       </ResponsiveContainer>
     </div>
