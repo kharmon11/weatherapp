@@ -1,0 +1,34 @@
+$toggle-bg-color-active: #e1c87f
+$toggle-bg-color-inactive: #f6e199
+$toggle-border-color: #c8ae62
+
+.week-forecast
+  min-height: 900px
+
+.week-forecast-toggle
+  display: flex
+  justify-content: center
+  width: 90%
+  margin: 5px auto
+
+  .week-forecast-btn
+    width: 50%
+    font-size: 1.3rem
+    font-weight: 600
+    padding: 5px
+    border-width: 5px
+    cursor: pointer
+
+  .week-forecast-btn-active
+    border: $toggle-border-color 5px inset
+    background-color: $toggle-bg-color-active
+
+  .week-forecast-btn-inactive
+    border: $toggle-border-color 5px outset
+    background-color: $toggle-bg-color-inactive
+
+.week-forecast-panel-active
+  display: block
+
+.week-forecast-panel-inactive
+  display: none

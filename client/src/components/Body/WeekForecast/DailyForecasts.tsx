@@ -1,7 +1,7 @@
-import "./WeekForecast.sass"
-import OpenWeatherMapIcon from "../common/OpenWeatherMapIcon.tsx";
+import "./DailyForecasts.sass"
+import OpenWeatherMapIcon from "../../common/OpenWeatherMapIcon.tsx";
 
-import type {DailyForecast} from "../../types/openweathermap.ts";
+import type {DailyForecast} from "../../../types/openweathermap.ts";
 
 interface WeekForecastProps {
     daily: DailyForecast[];
@@ -18,9 +18,9 @@ const openWeatherMapIconStyle = {
     borderRadius: "20px"
 }
 
-export default function WeekForecast({daily, timezone}: WeekForecastProps) {
+export default function DailyForecasts({daily, timezone}: WeekForecastProps) {
     return (
-        <div className={"week-forecast panel"}>
+        <div className={"daily-forecasts"}>
             {daily.map((day) => (
                 <div className={"day-forecast"} key={day.dt}>
                     <div className={"day-datetime"}>

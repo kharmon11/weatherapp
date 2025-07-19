@@ -1,7 +1,7 @@
 {
   "name": "weatherapp-client",
   "private": true,
-  "version": "1.5.6",
+  "version": "1.6.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -23,6 +23,7 @@
     "@eslint/js": "^9.31.0",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
+    "@types/recharts": "^2.0.1",
     "@vitejs/plugin-react": "^4.4.1",
     "eslint": "^9.31.0",
     "eslint-plugin-react-hooks": "^5.2.0",

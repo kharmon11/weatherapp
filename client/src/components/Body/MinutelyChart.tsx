@@ -20,7 +20,6 @@ export default function MinutelyChart({minutes, timezone}: MinutelyChartProps) {
             hour12: true,
             timeZone: timezone
         });
-        // const precip = Math.ceil(minute.precipitation)
         const precip = roundToDecimal(mmInchConvert(minute.precipitation), 3)
         return {time: timeString, minute: index === 0? "now": `${index}min`, precip: precip}
     })

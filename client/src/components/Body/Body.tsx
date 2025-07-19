@@ -5,7 +5,7 @@ import useWeather from "../../hooks/useWeather.tsx"
 import Spinner from "../common/Spinner.tsx"
 import LocationForm from "./LocationForm.tsx";
 import Current from "./Current.tsx";
-import WeekForecast from "./WeekForecast.tsx"
+import WeekForecast from "./WeekForecast/WeekForecast.tsx"
 
 export default function Body() {
     const {
