@@ -40,21 +40,22 @@ export default function WeekForecast({daily, timezone}: WeekForecastProps) {
         >
           Forecast
         </div>
-        <Suspense>
-          <div
-            onClick={weekForecastClickHandler}
-            className={"week-graphs-btn week-forecast-btn week-forecast-btn-inactive"}
-          >
-            Graphs
-          </div>
-        </Suspense>
+
+        <div
+          onClick={weekForecastClickHandler}
+          className={"week-graphs-btn week-forecast-btn week-forecast-btn-inactive"}
+        >
+          Graphs
+        </div>
       </div>
       <div className={"daily-forecasts-wrapper week-forecast-panel week-forecast-panel-active"}>
         <DailyForecasts daily={daily} timezone={timezone}/>
       </div>
-      <div className={"daily-graphs-wrapper week-forecast-panel week-forecast-panel-inactive"}>
-        <WeekGraphs daily={daily} timezone={timezone}/>
-      </div>
+      <Suspense>
+        <div className={"daily-graphs-wrapper week-forecast-panel week-forecast-panel-inactive"}>
+          <WeekGraphs daily={daily} timezone={timezone}/>
+        </div>
+      </Suspense>
     </div>
   )
 }
