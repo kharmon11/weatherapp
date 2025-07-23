@@ -1,15 +1,16 @@
 import "./WeekForecast.sass"
-import React from "react"
+import React, {Suspense, lazy} from "react"
 import DailyForecasts from "./DailyForecasts"
-import type { DailyForecast } from "../../../types/openweathermap.ts"
-import WeekGraphs from "./WeekGraphs"
+import type {DailyForecast} from "../../../types/openweathermap.ts"
+// import WeekGraphs from "./WeekGraphs"
+const WeekGraphs = lazy(() => import("./WeekGraphs"))
 
 interface WeekForecastProps {
   daily: DailyForecast[]
   timezone: string
 }
 
-export default function WeekForecast({ daily, timezone }: WeekForecastProps) {
+export default function WeekForecast({daily, timezone}: WeekForecastProps) {
   const weekForecastClickHandler = (event: React.MouseEvent<HTMLDivElement>) => {
     const parent = event.currentTarget.closest(".week-forecast")
     if (!parent) return
@@ -39,18 +40,20 @@ export default function WeekForecast({ daily, timezone }: WeekForecastProps) {
         >
           Forecast
         </div>
-        <div
-          onClick={weekForecastClickHandler}
-          className={"week-graphs-btn week-forecast-btn week-forecast-btn-inactive"}
-        >
-          Graphs
-        </div>
+        <Suspense>
+          <div
+            onClick={weekForecastClickHandler}
+            className={"week-graphs-btn week-forecast-btn week-forecast-btn-inactive"}
+          >
+            Graphs
+          </div>
+        </Suspense>
       </div>
       <div className={"daily-forecasts-wrapper week-forecast-panel week-forecast-panel-active"}>
-        <DailyForecasts daily={daily} timezone={timezone} />
+        <DailyForecasts daily={daily} timezone={timezone}/>
       </div>
       <div className={"daily-graphs-wrapper week-forecast-panel week-forecast-panel-inactive"}>
-        <WeekGraphs daily={daily} timezone={timezone} />
+        <WeekGraphs daily={daily} timezone={timezone}/>
       </div>
     </div>
   )
