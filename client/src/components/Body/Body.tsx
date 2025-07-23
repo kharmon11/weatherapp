@@ -6,9 +6,6 @@ import type {MapMouseEvent} from "@vis.gl/react-google-maps";
 import useWeather from "../../hooks/useWeather.tsx"
 import Spinner from "../common/Spinner.tsx"
 import LocationForm from "./LocationForm.tsx";
-// import Current from "./Current.tsx";
-// import WeekForecast from "./WeekForecast/WeekForecast.tsx"
-
 const Current = lazy(() => import("./Current"))
 const WeekForecast = lazy(() => import("./WeekForecast/WeekForecast.tsx"))
 

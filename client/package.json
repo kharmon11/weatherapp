@@ -1,7 +1,7 @@
 {
   "name": "weatherapp-client",
   "private": true,
-  "version": "1.6.6",
+  "version": "1.7.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,6 +12,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^7.0.0",
+    "@fortawesome/free-brands-svg-icons": "^7.0.0",
+    "@fortawesome/free-regular-svg-icons": "^7.0.0",
+    "@fortawesome/free-solid-svg-icons": "^7.0.0",
+    "@fortawesome/react-fontawesome": "^0.2.3",
     "@vis.gl/react-google-maps": "^1.5.4",
     "axios": "^1.10.0",
     "react": "^19.1.0",

@@ -1,27 +1,11 @@
 import './App.sass'
 
 import Body from "./components/Body/Body.tsx"
-
-function Header() {
-    return (
-        <header className="header">
-
-        </header>
-    )
-}
-
-function Footer() {
-    return (
-        <footer className="footer">
-
-        </footer>
-    )
-}
+import Footer from "./components/Footer/Footer.tsx"
 
 function App() {
     return (
         <div className="App">
-            <Header/>
             <Body/>
             <Footer/>
         </div>

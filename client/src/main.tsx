@@ -1,5 +1,9 @@
 import {StrictMode} from 'react'
 import {createRoot} from 'react-dom/client'
+import {library} from '@fortawesome/fontawesome-svg-core'
+import {faGithub} from '@fortawesome/free-brands-svg-icons'
+library.add(faGithub)
+
 import './index.sass'
 import App from './App.tsx'
 import {initializeGA} from './utils/analytics'

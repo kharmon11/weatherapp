@@ -18,14 +18,14 @@ A full-stack weather application that displays current and forecast weather info
 
 ## 🧰 Tech Stack
 
-| Layer       | Tech                                                      |
-|-------------|-----------------------------------------------------------|
-| Frontend    | React 19.1.0, TypeScript, Vite, Sass, @vis.gl/react-google-maps |
-| Backend     | FastAPI, Python 3.11, Gunicorn, Uvicorn                 |
-| Data APIs   | OpenWeatherMap, Google Maps API                          |
-| Deployment  | Google Cloud App Engine                                   |
-| Node.js     | v22.11.0                                                  |
-| Dependencies| Axios, React Icons, Recharts, Pydantic                  |
+| Layer       | Tech                                                             |
+|-------------|------------------------------------------------------------------|
+| Frontend    | React 19.1.0, TypeScript, Vite, Sass, @vis.gl/react-google-maps  |
+| Backend     | FastAPI, Python 3.11, Gunicorn, Uvicorn                          |
+| Data APIs   | OpenWeatherMap, Google Maps API                                  |
+| Deployment  | Google Cloud App Engine                                          |
+| Node.js     | v22.11.0                                                         |
+| Dependencies| Axios, React Icons, Recharts, Pydantic                           |
 
 ## 🚀 Getting Started
 
@@ -74,32 +74,53 @@ npm run dev  # or pnpm run dev
 The frontend will be available at `http://localhost:5173`
 
 ## 📁 Project Structure
-
+<!-- START STRUCTURE -->
+```text
+.
+├── LICENSE
+├── README.md
+├── client
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package.json
+│   ├── pnpm-lock.yaml
+│   ├── public
+│   │   └── favicon.svg
+│   ├── src
+│   │   ├── App.css
+│   │   ├── App.sass
+│   │   ├── App.tsx
+│   │   ├── components
+│   │   ├── hooks
+│   │   ├── index.css
+│   │   ├── index.sass
+│   │   ├── main.tsx
+│   │   ├── services
+│   │   ├── types
+│   │   ├── utils
+│   │   └── vite-env.d.ts
+│   ├── tsconfig.app.json
+│   ├── tsconfig.json
+│   ├── tsconfig.node.json
+│   └── vite.config.ts
+├── package.json
+├── pnpm-lock.yaml
+├── requirements.txt
+├── scripts
+│   └── generate-structure.sh
+└── server
+    ├── __init__.py
+    ├── app
+    │   ├── __init__.py
+    │   ├── api
+    │   ├── core
+    │   ├── main.py
+    │   ├── models
+    │   └── services
+    ├── app.yaml
+    └── requirements.txt
 ```
-weatherapp/
-├── client/                 # React + TypeScript frontend
-│   ├── src/
-│   │   ├── components/     # React components
-│   │   ├── hooks/          # Custom React hooks
-│   │   ├── services/       # API service functions
-│   │   ├── types/          # TypeScript type definitions
-│   │   └── styles/         # Sass stylesheets
-│   ├── public/             # Static assets
-│   ├── dist/               # Production build output
-│   ├── .env                # Frontend environment variables
-│   └── package.json
-├── server/                 # FastAPI backend
-│   ├── app/
-│   │   ├── api/
-│   │   │   └── openweathermap.py  # Weather API routes
-│   │   ├── dist/           # Frontend build (copied from client/dist)
-│   │   └── main.py         # FastAPI application entry point
-│   ├── .env                # Backend environment variables
-│   ├── app.yaml            # Google App Engine configuration
-│   └── requirements.txt
-└── README.md
-```
-
+<!-- END STRUCTURE -->
 ## 🔧 Environment Variables
 
 ### Frontend (.env)
