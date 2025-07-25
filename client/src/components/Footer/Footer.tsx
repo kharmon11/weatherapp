@@ -7,7 +7,7 @@ export default function Footer() {
     <footer className="footer">
       <div className={"logo-container"}>
         <a href={"https://kenharmon.net"}>
-          <Logo width={45} height={45}/>
+          <Logo width={43} height={43}/>
         </a>
       </div>
       <div>

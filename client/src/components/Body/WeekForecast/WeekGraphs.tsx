@@ -48,12 +48,37 @@ export default function WeekGraphs({daily, timezone}: WeekForecastProps) {
 
   const hasGustData = windData.some(day => day.windGust != null)
 
+  const findWindMax = (dailyData: DailyForecast[]): number => {
+    let windMax = 30; // Wind scale will be at least 30
+    let currentWindValue;
+    for (let i = 0; i < dailyData.length; i++) {
+      const gust = dailyData[i].wind_gust
+      currentWindValue = gust !== undefined ? gust: dailyData[i].wind_speed
+      if (currentWindValue > windMax) {
+        windMax = currentWindValue
+      }
+    }
+    return Math.ceil(windMax / 10) * 10
+  }
+
+  const windMaxValue = findWindMax(daily)
+
+  const createWindTickYArray = (windMax: number): number[]  => {
+    const windTicksY = []
+    for (let i = 0; i < (windMax / 10) + 1; i++) {
+      windTicksY.push(i * 10)
+    }
+    return windTicksY
+  }
+
+  const windTicksY = createWindTickYArray(windMaxValue)
+
   return (
     <div className={"week-graphs"}>
       <h3 className={"daily-forecast-graph-title"}>Temperature and Dew Point</h3>
       <ResponsiveContainer className={"daily-forecast-graph"} width="100%" height={400}>
         <ComposedChart data={tempData} barCategoryGap={0}>
-          <CartesianGrid strokeDasharray="3 3"/>
+          <CartesianGrid strokeDasharray="3 3" stroke="#888"/>
           <XAxis dataKey="date"/>
           <YAxis
             label={{ value: '\u00B0F', angle: -90, position: 'insideLeft', offset: 10 }}
@@ -61,23 +86,23 @@ export default function WeekGraphs({daily, timezone}: WeekForecastProps) {
           <Legend/>
 
           <Bar
-            dataKey={"lowTemp"}
-            fill={"blue"}
-            name={"Low Temp"}
+            dataKey="lowTemp"
+            fill="blue"
+            name="Low Temp"
             barSize={40}
           />
           <Bar
-            dataKey={"highTemp"}
-            fill={"red"}
-            name={"High Temp"}
+            dataKey="highTemp"
+            fill="red"
+            name="High Temp"
             barSize={40}
           />
           <Line
-            dataKey={"dewPoint"}
-            type={"monotone"}
-            stroke={"green"}
+            dataKey="dewPoint"
+            type="monotone"
+            stroke="green"
             strokeWidth={3}
-            name={"Dew Point"}
+            name="Dew Point"
             dot={{r: 8}}
           />
           <Tooltip/>
@@ -86,9 +111,12 @@ export default function WeekGraphs({daily, timezone}: WeekForecastProps) {
       <h3 className={"daily-forecast-graph-title"}>Wind Speed and Gusts</h3>
       <ResponsiveContainer className={"daily-forecast-graph"} width="100%" height={400}>
         <LineChart data={windData}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#888"/>
           <XAxis dataKey="date"/>
           <YAxis
             label={{ value: 'mph', angle: -90, position: 'insideLeft', offset: 10 }}
+            domain={[0, windMaxValue]}
+            ticks={windTicksY}
           />
           <Legend/>
           <Line
@@ -103,6 +131,7 @@ export default function WeekGraphs({daily, timezone}: WeekForecastProps) {
               name="Wind Gust"
               stroke="#88f"
               strokeWidth={3}
+              strokeDasharray="3 3"
               connectNulls
             />
           )}
