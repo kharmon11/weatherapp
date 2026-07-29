@@ -16,9 +16,8 @@ WeatherApp is a full-stack weather application that shows current conditions and
 
 ### Frontend (run from `client/`)
 - `pnpm run dev` — start Vite dev server at `http://localhost:5173`
-- `pnpm run build` — type-unchecked prod build (`vite build`), then runs `copy-dist`
+- `pnpm run build` — type-checks (`tsc --noEmit` against both `tsconfig.app.json` and `tsconfig.node.json`), then `vite build`, then runs `copy-dist`. Fails fast on type errors before producing any output.
 - `pnpm run copy-dist` — deletes `../server/app/dist` and copies the built `dist/` there (this is how the frontend gets served by FastAPI in prod)
-- `pnpm run build0` — `tsc -b && vite build`, i.e. build with a TypeScript type check first (use this to actually catch type errors; plain `build` does not type-check)
 - `pnpm run lint` — ESLint (flat config, `eslint.config.js`)
 - `pnpm run preview` — preview the production build locally
 
@@ -31,7 +30,7 @@ WeatherApp is a full-stack weather application that shows current conditions and
 ### Structure doc
 - `scripts/generate-structure.sh` regenerates the file tree block in `README.md` (between `<!-- START STRUCTURE -->`/`<!-- END STRUCTURE -->`). Requires `tree`.
 
-There is no root-level build tooling — the root `package.json`/`pnpm-lock.yaml`/`requirements.txt` are legacy/unused; always `cd client` or `cd server` first.
+There is no root-level build tooling — the root `pnpm-lock.yaml`/`requirements.txt` are legacy/unused leftovers with no corresponding `package.json` to drive them; always `cd client` or `cd server` first.
 
 ## Architecture notes
 
@@ -66,6 +65,6 @@ There is no root-level build tooling — the root `package.json`/`pnpm-lock.yaml
 
 - **This is a live production app** at weather.kenharmon.net (App Engine). Treat deploy-triggering actions (`gcloud app deploy`, editing `server/app.yaml`) as high-impact — confirm with the user before running or changing them.
 - `server/app.yaml` (gitignored, present locally) contains real production API keys in plaintext. Don't print its contents, copy it elsewhere, or commit it.
-- `pnpm run build` (used by `copy-dist`/deploy) does **not** type-check; a build can "succeed" with type errors. Use `pnpm run build0` if you need a real type-check.
+- `pnpm run build` type-checks before bundling — a build cannot "succeed" with type errors present.
 - Changing the `/api/openweathermap` response shape or the `{error_type, message}` error shape requires updating `weatherService.ts`/`useWeather.tsx` in lockstep — they're tightly coupled to it.
 - `ALLOWED_ORIGINS` is required and validated at startup in production (`main.py` raises if unset/empty) — don't remove that check.
