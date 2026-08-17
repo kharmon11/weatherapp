@@ -36,6 +36,9 @@ jobs:
 
       - name: Run backend test suite
         working-directory: server
+        env:
+          GOOGLE_MAPS_GEOCODING_KEY: test-google-key
+          OPENWEATHERMAP_API_KEY: test-owm-key
         run: pytest
 
   frontend-tests:
