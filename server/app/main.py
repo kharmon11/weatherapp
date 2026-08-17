@@ -16,9 +16,10 @@ app = FastAPI()
 ENV = os.getenv("ENV")
 
 if ENV == "production":
-  origins = os.getenv("ALLOWED_ORIGINS").split(",")
-  if not origins or origins == [""]:
+  allowed_origins_env = os.getenv("ALLOWED_ORIGINS")
+  if not allowed_origins_env:
     raise ValueError("ALLOWED_ORIGINS environment variable must be set in production")
+  origins = allowed_origins_env.split(",")
 else:
   origins = ["http://localhost:5173", "localhost:5173"]
 

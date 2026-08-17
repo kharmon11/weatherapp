@@ -77,13 +77,13 @@ The frontend will be available at `http://localhost:5173`
 <!-- START STRUCTURE -->
 ```text
 .
-├── LICENSE
-├── README.md
+├── CLAUDE.md
 ├── client
 │   ├── eslint.config.js
 │   ├── index.html
 │   ├── package.json
 │   ├── pnpm-lock.yaml
+│   ├── pnpm-workspace.yaml
 │   ├── public
 │   │   └── favicon.svg
 │   ├── src
@@ -96,6 +96,7 @@ The frontend will be available at `http://localhost:5173`
 │   │   ├── index.sass
 │   │   ├── main.tsx
 │   │   ├── services
+│   │   ├── test
 │   │   ├── types
 │   │   ├── utils
 │   │   └── vite-env.d.ts
@@ -103,8 +104,9 @@ The frontend will be available at `http://localhost:5173`
 │   ├── tsconfig.json
 │   ├── tsconfig.node.json
 │   └── vite.config.ts
-├── package.json
+├── LICENSE
 ├── pnpm-lock.yaml
+├── README.md
 ├── requirements.txt
 ├── scripts
 │   └── generate-structure.sh
@@ -118,7 +120,18 @@ The frontend will be available at `http://localhost:5173`
     │   ├── models
     │   └── services
     ├── app.yaml
-    └── requirements.txt
+    ├── pytest.ini
+    ├── requirements-dev.txt
+    ├── requirements.txt
+    └── tests
+        ├── __init__.py
+        ├── conftest.py
+        ├── test_config.py
+        ├── test_geocode_service.py
+        ├── test_is_coordinates.py
+        ├── test_main.py
+        ├── test_openweathermap_route.py
+        └── test_openweathermap_service.py
 ```
 <!-- END STRUCTURE -->
 ## 🔧 Environment Variables

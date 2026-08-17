@@ -20,3 +20,8 @@ __pycache__/
 
 # custom
 /scripts
+/tests
+requirements-dev.txt
+pytest.ini
+.env
+venv/

@@ -1,0 +1,17 @@
+# Template for server/app.yaml, rendered by the CI/CD workflow via `envsubst`
+# (see .github/workflows/ci-cd.yml). The real app.yaml is gitignored because
+# it holds production secrets in plaintext - this template holds none and is
+# safe to commit.
+#
+# Kept in sync with server/app.yaml - update both if either changes.
+runtime: python311
+entrypoint: gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app
+
+env_variables:
+  ENV: "production"
+  ALLOWED_ORIGINS: "$ALLOWED_ORIGINS"
+  OPENWEATHERMAP_API_KEY: "$OPENWEATHERMAP_API_KEY"
+  GOOGLE_MAPS_GEOCODING_KEY: "$GOOGLE_MAPS_GEOCODING_KEY"
+
+automatic_scaling:
+  target_cpu_utilization: 0.65

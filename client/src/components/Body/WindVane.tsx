@@ -11,7 +11,7 @@ export default function WindVane({windDirection}: WindVaneProps) {
   useEffect(() => {
     setAdjustedRotation(prevRotation => {
       const delta = windDirection - prevRotation;
-      const shortestRotation = ((delta + 180) % 360) - 180;
+      const shortestRotation = (((delta + 180) % 360) + 360) % 360 - 180;
       return prevRotation + shortestRotation;
     });
 
