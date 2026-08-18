@@ -86,6 +86,8 @@ The frontend will be available at `http://localhost:5173`
 │   ├── pnpm-workspace.yaml
 │   ├── public
 │   │   └── favicon.svg
+│   ├── scripts
+│   │   └── smoke-test.mjs
 │   ├── src
 │   │   ├── App.css
 │   │   ├── App.sass
@@ -104,6 +106,7 @@ The frontend will be available at `http://localhost:5173`
 │   ├── tsconfig.json
 │   ├── tsconfig.node.json
 │   └── vite.config.ts
+├── DEPLOYMENT.md
 ├── LICENSE
 ├── pnpm-lock.yaml
 ├── README.md
@@ -120,6 +123,7 @@ The frontend will be available at `http://localhost:5173`
     │   ├── models
     │   └── services
     ├── app.yaml
+    ├── app.yaml.template
     ├── pytest.ini
     ├── requirements-dev.txt
     ├── requirements.txt
@@ -184,28 +188,9 @@ GOOGLE_MAPS_GEOCODING_KEY=your_google_maps_api_key
 
 ## 🚀 Deployment
 
-The application is deployed on Google Cloud App Engine with the following configuration:
+The application deploys automatically to Google Cloud App Engine via a GitHub Actions pipeline — merging a pull request into `master` is the only step involved. The pipeline builds the frontend, deploys the new code as a non-promoted App Engine version, runs an automated smoke test against it, and only then shifts live traffic to it; a failed smoke test leaves production untouched.
 
-### Production Build Process
-1. **Frontend Build**: Run `npm run build` (or `pnpm run build`) to build the React app and automatically copy the dist folder to the server
-2. **Backend Deployment**: The FastAPI server serves both the API and the static frontend files in production
-
-### Google App Engine Configuration
-- **Runtime**: Python 3.11
-- **Server**: Gunicorn with 4 workers using Uvicorn workers
-- **Auto-scaling**: Targets 65% CPU utilization
-- **Environment**: Production environment variables are configured in `app.yaml`
-
-### Deployment Steps
-1. Build the frontend: `cd client && npm run build`
-2. Deploy to App Engine: `gcloud app deploy server/app.yaml`
-3. The app will be available at your App Engine URL
-
-### Environment Setup
-Make sure to configure your production environment variables in `server/app.yaml`:
-- `ALLOWED_ORIGINS` should include your production domains
-- API keys should be securely configured
-- `ENV` should be set to "production"
+See [`DEPLOYMENT.md`](DEPLOYMENT.md) for the full pipeline walkthrough, required configuration, and rollback procedure.
 
 ## 🤝 Contributing
 
