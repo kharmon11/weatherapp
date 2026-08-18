@@ -131,9 +131,39 @@ jobs:
           GOOGLE_MAPS_GEOCODING_KEY: ${{ secrets.GOOGLE_MAPS_GEOCODING_KEY }}
         run: envsubst < app.yaml.template > app.yaml
 
+      - name: Compute deploy version
+        id: version
+        run: echo "version=sha-${GITHUB_SHA:0:7}" >> "$GITHUB_OUTPUT"
+
       - name: Deploy to App Engine
+        id: deploy
         uses: google-github-actions/deploy-appengine@v2
         with:
           project_id: ${{ vars.GCP_PROJECT_ID }}
           working_directory: server
           deliverables: app.yaml
+          version: ${{ steps.version.outputs.version }}
+          promote: false
+
+      - name: Install Playwright browser
+        working-directory: client
+        run: npx playwright install --with-deps chromium
+
+      # Runs against the version deployed above, which is not yet receiving
+      # any live traffic (promote: false) - a failure here leaves the
+      # currently-live version serving weather.kenharmon.net untouched.
+      - name: Smoke test deployed version
+        working-directory: client
+        run: node scripts/smoke-test.mjs "${{ steps.deploy.outputs.version_url }}"
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      # Only reached if the smoke test step above succeeded - GitHub Actions
+      # skips remaining steps in a job by default once a prior step fails.
+      - name: Promote version to live traffic
+        run: |
+          gcloud app services set-traffic default \
+            --splits="${{ steps.deploy.outputs.version_id }}=1" \
+            --project="${{ vars.GCP_PROJECT_ID }}" \
+            --quiet
