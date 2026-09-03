@@ -11,7 +11,7 @@ export default function Footer() {
         </a>
       </div>
       <div>
-        <div>© 2025 Ken Harmon. All rights reserved.</div>
+        <div>© {new Date().getFullYear()} Ken Harmon. All rights reserved.</div>
       </div>
       <div>
         <a href={"https://github.com/kharmon11/weatherapp"}>
