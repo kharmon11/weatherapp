@@ -22,12 +22,14 @@ WeatherApp is a full-stack weather application that shows current conditions and
 - `pnpm run preview` — preview the production build locally
 - `pnpm test` — run the Vitest suite once (`client/src/**/*.test.{ts,tsx}`)
 - `pnpm test:watch` — Vitest in watch mode
+- `pnpm test:coverage` — Vitest once with a coverage report (v8 provider, configured in `vite.config.ts`'s `test.coverage` block). The terminal table hides fully-covered files by default (`skipFull`) so it only lists files needing attention; a full per-file report is written to `client/coverage/index.html`.
 
 ### Backend (run from `server/`, with venv active)
 - `uvicorn app.main:app --reload` — dev server at `http://localhost:8000`
 - `gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app` — prod entrypoint (matches `app.yaml`)
 - `pip install -r requirements.txt -r requirements-dev.txt` — install prod + test deps (test deps are split into `requirements-dev.txt` so they don't ship to prod)
 - `pytest` — run the backend test suite (`server/tests/`, config in `server/pytest.ini`). No Python linter is configured.
+- `pytest --cov=app --cov-report=term-missing` — run tests with a coverage report (`pytest-cov`, already in `requirements-dev.txt`), showing uncovered line numbers per file.
 
 ### Structure doc
 - `scripts/generate-structure.sh` regenerates the file tree block in `README.md` (between `<!-- START STRUCTURE -->`/`<!-- END STRUCTURE -->`). Requires `tree`.
@@ -37,10 +39,10 @@ There is no root-level build tooling — the root `pnpm-lock.yaml`/`requirements
 ## Architecture notes
 
 - **`server/app/main.py`** — FastAPI app entrypoint. CORS origins come from `ALLOWED_ORIGINS` env var in production, hardcoded localhost otherwise. When `ENV=production`, it additionally serves the built frontend as static files (mounted at `/`) plus an explicit `no-cache` route for `index.html` (for cache-busting on deploys). In dev, only the API runs — the frontend is served separately by Vite.
-- **`server/app/api/openweathermap.py`** — the only API route, `GET /api/openweathermap?location=`. `location` is either a free-text address or a `"lat,lon"` pair (detected via `is_coordinates`). Flow: geocode → fetch weather → merge and return.
+- **`server/app/api/openweathermap.py`** — the only API route, `GET /api/openweathermap?location=`. `location` is either a free-text address or a `"lat,lon"` pair; it's passed to `geocode()` unchanged either way — Google's Geocoding API accepts and reverse-geocodes a coordinate pair given as a plain address string, so no branching is needed. Flow: geocode → fetch weather → merge and return.
 - **`server/app/services/geocode.py`** and **`services/openweathermap.py`** — thin async wrappers around the Google Geocoding API and OpenWeatherMap One Call API respectively, using `httpx`. The weather call retries on timeout (3 attempts, backoff) and translates upstream failures into `HTTPException`s with `{error_type, message}` detail payloads — the frontend depends on this shape.
 - **`server/app/core/config.py`** — Pydantic `Settings` pulling `GOOGLE_MAPS_GEOCODING_KEY` / `OPENWEATHERMAP_API_KEY` from env (`.env` via `python-dotenv` in dev, `app.yaml` `env_variables` in prod).
-- **`server/tests/`** — pytest suite covering `main.py` (CORS/static-mount branching by env), the `/api/openweathermap` route, both service wrappers, `is_coordinates`, and `Settings`. Outbound HTTP to Google/OpenWeatherMap is mocked with `respx` at the transport level (service-layer tests) or by patching the service functions directly (route-level tests) — no test ever makes a real API call. A `conftest.py` fixture stubs `settings` with dummy keys for every test.
+- **`server/tests/`** — pytest suite covering `main.py` (CORS/static-mount branching by env), the `/api/openweathermap` route, both service wrappers, and `Settings`. Outbound HTTP to Google/OpenWeatherMap is mocked with `respx` at the transport level (service-layer tests) or by patching the service functions directly (route-level tests) — no test ever makes a real API call. A `conftest.py` fixture stubs `settings` with dummy keys for every test.
 - **`client/src/hooks/useWeather.tsx`** — central state/data-fetching hook (weather data, loading, error state) used by `Body.tsx`; all three fetch triggers (form submit, geolocation, map click) funnel through `fetchWeather`.
 - **`client/src/services/weatherService.ts`** — the single Axios call to the backend; normalizes Axios errors into `{error_type, message}` objects consumed by `useWeather`.
 - **`client/src/components/Body/`** — main UI: `LocationForm` (search/geolocation), `Current` + `GoogleMap` + `WindVane` + `MinutelyChart` (current conditions), `WeekForecast/` (`DailyForecasts` list + `WeekGraphs` temp/wind charts via Recharts). `Current` and `WeekForecast` are lazy-loaded (`React.lazy`) to keep initial bundle small.

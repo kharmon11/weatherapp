@@ -132,7 +132,6 @@ The frontend will be available at `http://localhost:5173`
         ├── conftest.py
         ├── test_config.py
         ├── test_geocode_service.py
-        ├── test_is_coordinates.py
         ├── test_main.py
         ├── test_openweathermap_route.py
         └── test_openweathermap_service.py
