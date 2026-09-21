@@ -15,7 +15,6 @@ export default defineConfig({
       // files that still need attention. Full per-file detail, including the
       // 100% files, is in the html report.
       reporter: ['text', 'html'],
-      all: true,
       include: ['src/**/*.{ts,tsx}'],
       exclude: ['src/**/*.test.{ts,tsx}', 'src/test/**', 'src/**/*.d.ts', 'src/main.tsx']
     }
