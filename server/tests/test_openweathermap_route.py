@@ -34,8 +34,8 @@ def test_happy_path_assembles_response_shape(client, monkeypatch):
 
 
 def test_geocode_string_input_passed_through_unchanged(client, monkeypatch):
-    # is_coordinates() is defined but never invoked by the route - geocode()
-    # always receives the raw location string, coordinate-shaped or not.
+    # geocode() always receives the raw location string, coordinate-shaped or
+    # not - the route does no pre-parsing or branching on its shape.
     geocode_mock = AsyncMock(
         return_value={
             "location_text": "40.71 °N, -74.01 °E",
