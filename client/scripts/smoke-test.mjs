@@ -10,39 +10,34 @@ if (!url) {
 const SEARCH_LOCATION = "Boston, MA";
 const EXPECTED_LOCATION_TEXT = /boston/i;
 
-// The deployed candidate's Google Map can never load: the Maps JS key's HTTP
-// referrer restriction can't be wildcarded to cover the ephemeral per-deploy
-// hostname (Google doesn't support wildcarding mid-label - a real config, not
-// a bug), so it's expected to fail here specifically. Real users only ever
-// hit the promoted custom domain, which the key already allows. Scoped to
-// this one named Google error so any other, unrelated console error still
-// fails the test. (Based on Google's documented error name for this exact
-// condition - not something reproducible in dev without a referrer-restricted
-// production key, so double-check this pattern against the actual console
-// text if it ever stops matching.)
-const IGNORED_CONSOLE_ERROR_PATTERNS = [/RefererNotAllowedMapError/];
-
 const errors = [];
 
-// Submitting a search mounts the Google Map, which needs WebGL for vector
-// tiles. Headless Chromium has no GPU by default, so without these flags Maps
-// falls back to raster tiles and logs that fallback as a console error -
-// a false positive unrelated to app health. SwiftShader gives it software
-// WebGL so it renders the same way it would for a real user.
-const browser = await chromium.launch({
-    args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"]
-});
+const browser = await chromium.launch();
 try {
     const page = await browser.newPage();
+
+    // KNOWN GAP: this smoke test does not verify the Google Map renders.
+    // The real Maps JS script can't reliably load in any headless CI browser -
+    // its HTTP-referrer restriction can't cover the ephemeral per-deploy
+    // hostname (Google doesn't support wildcarding mid-label), and separately,
+    // headless Chromium has no GPU on GitHub's runners, so WebGL-dependent
+    // vector-tile rendering fails too. Both are real, unrelated dead ends we
+    // hit and confirmed, not assumptions. Rather than chase Google's script
+    // for whatever error it produces next (a moving target we don't control),
+    // this intercepts the request and returns an empty, successful response
+    // so the map quietly never finishes loading - a state the app already
+    // handles without erroring - and the API is never actually called, so
+    // this no longer costs anything either. Real users never hit this path;
+    // they load the real script from the promoted custom domain, which the
+    // Maps key's referrer restriction already allows.
+    await page.route("https://maps.googleapis.com/**", (route) =>
+        route.fulfill({ status: 200, contentType: "application/javascript", body: "" })
+    );
 
     page.on("pageerror", (err) => errors.push(`Uncaught exception: ${err.message}`));
     page.on("console", (msg) => {
         if (msg.type() === "error") {
-            const text = msg.text();
-            if (IGNORED_CONSOLE_ERROR_PATTERNS.some((pattern) => pattern.test(text))) {
-                return;
-            }
-            errors.push(`Console error: ${text}`);
+            errors.push(`Console error: ${msg.text()}`);
         }
     });
 
