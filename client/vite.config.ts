@@ -5,6 +5,16 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   base: "/",
+  preview: {
+    // `pnpm run preview` serves only the built static files (no backend), and
+    // production builds now call a same-origin relative /api path (see
+    // weatherService.ts) instead of an absolute URL. Proxy that path to a
+    // locally-running backend (`uvicorn app.main:app --reload` in server/) so
+    // preview mode still works for checking a production build locally.
+    proxy: {
+      '/api': 'http://localhost:8000'
+    }
+  },
   test: {
     environment: 'jsdom',
     setupFiles: './src/test/setup.ts',

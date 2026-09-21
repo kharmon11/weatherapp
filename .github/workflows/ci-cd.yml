@@ -101,12 +101,14 @@ jobs:
       # for local deploys, so server/app/dist ends up populated identically.
       # Vite bakes VITE_* vars into the bundle at build time (see
       # client/.env.production, which is gitignored and never exists in CI),
-      # and client/src/utils/validateEnv.ts throws at runtime if any are
-      # missing, so they must be supplied here.
+      # and client/src/utils/validateEnv.ts throws at runtime if any of the
+      # ones below are missing, so they must be supplied here. VITE_API_BASE_URL
+      # is deliberately NOT set here: leaving it unset makes the frontend call
+      # its own origin instead of a fixed domain (see weatherService.ts), which
+      # works correctly for every deployed environment, promoted or candidate.
       - name: Build frontend
         working-directory: client
         env:
-          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
           VITE_GOOGLE_MAPS_JAVASCRIPT_KEY: ${{ secrets.VITE_GOOGLE_MAPS_JAVASCRIPT_KEY }}
           VITE_GOOGLE_MAPS_MAP_ID: ${{ vars.VITE_GOOGLE_MAPS_MAP_ID }}
           VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID: ${{ vars.VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID }}
