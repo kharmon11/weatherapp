@@ -2,6 +2,7 @@
 .idea/
 app.yaml
 client/dist
+/local
 
 ### VisualStudioCode template
 .vscode/*
