@@ -1,6 +1,9 @@
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// Empty string is intentional in deployed builds (same-origin API calls -
+// see validateEnv.ts); the "|| ''" guards against the literal string
+// "undefined" ending up in the request URL if this is ever truly undefined.
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 const weatherService = async (location: string) => {
     try {

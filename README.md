@@ -148,6 +148,8 @@ VITE_GOOGLE_MAPS_MAP_ID=your_google_maps_map_id
 VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID=your_google_analytics_measurement_id  # Optional
 ```
 
+`VITE_API_BASE_URL` is only set to an absolute URL for local development, since the frontend (Vite) and backend (FastAPI) run as separate servers on different ports there. Deployed builds leave it empty so the app calls its own origin instead (FastAPI always serves the frontend and API together in production) — see `client/src/utils/validateEnv.ts` and `client/src/services/weatherService.ts`.
+
 ### Backend (.env)
 
 ```bash

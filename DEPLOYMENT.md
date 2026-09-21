@@ -39,9 +39,10 @@ Configured under the repo's **Settings → Secrets and variables → Actions**.
 | `GCP_WORKLOAD_IDENTITY_PROVIDER` | Full resource name of the WIF provider used to authenticate |
 | `GCP_SERVICE_ACCOUNT` | Email of the service account the pipeline impersonates via WIF |
 | `ALLOWED_ORIGINS` | CORS origins for the backend, rendered into `app.yaml` |
-| `VITE_API_BASE_URL` | Frontend build-time: backend base URL |
 | `VITE_GOOGLE_MAPS_MAP_ID` | Frontend build-time: Google Maps map ID |
 | `VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID` | Frontend build-time: GA measurement ID |
+
+Note: `VITE_API_BASE_URL` (used locally, see the frontend `.env` example in `README.md`) is deliberately **not** set in CI — leaving it unset makes deployed builds call their own origin instead of a fixed domain, which works correctly for every deployed environment. See `client/src/services/weatherService.ts`.
 
 ### Secrets (sensitive)
 
