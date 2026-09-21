@@ -26,6 +26,11 @@ FULL_COMPONENTS = [
     {"types": ["country"], "short_name": "US"},
 ]
 
+PARTIAL_COMPONENTS_MISSING_COUNTRY = [
+    {"types": ["locality"], "short_name": "New York"},
+    {"types": ["administrative_area_level_1"], "short_name": "NY"},
+]
+
 
 @respx.mock
 async def test_geocode_happy_path():
@@ -54,6 +59,24 @@ async def test_geocode_falls_back_to_lat_lon_when_components_missing():
     result = await geocode("somewhere obscure")
 
     assert result["location_text"] == f"{result['lat_string']}, {result['lon_string']}"
+
+
+@respx.mock
+async def test_geocode_falls_back_to_lat_lon_when_any_single_component_is_missing():
+    # location_text is built as f"{city}, {state}, {country}" - missing ANY ONE
+    # of the three raises UnboundLocalError for the whole f-string, discarding
+    # whatever components WERE found rather than showing partial info. Pinning
+    # this as current, intentionally-unchanged behavior (not fixing it): city
+    # and state were found here but the result still falls all the way back to
+    # raw coordinates instead of showing "New York, NY".
+    respx.get(GEOCODE_URL).mock(
+        return_value=httpx.Response(200, json=_ok_response(PARTIAL_COMPONENTS_MISSING_COUNTRY))
+    )
+
+    result = await geocode("New York, NY")
+
+    assert result["location_text"] == f"{result['lat_string']}, {result['lon_string']}"
+    assert "New York" not in result["location_text"]
 
 
 @respx.mock
