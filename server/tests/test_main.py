@@ -2,6 +2,7 @@ import importlib
 import os
 
 import pytest
+from fastapi.testclient import TestClient
 from starlette.routing import Mount
 
 import app.main as main_module
@@ -90,3 +91,66 @@ def test_production_mounts_static_files(monkeypatch, reload_main, dist_dir):
     assert "/" in route_paths
     static_mounts = [r for r in mod.app.routes if isinstance(r, Mount) and r.name == "static"]
     assert len(static_mounts) == 1
+
+
+# Non-promoted candidate deploys (version id "sha-<7 hex chars>", per ci-cd.yml's
+# `version=sha-${GITHUB_SHA:0:7}`) are only reachable at their own per-version
+# appspot.com URL, which isn't in ALLOWED_ORIGINS. The frontend's API base URL is
+# fixed at build time to the production domain regardless of which version it's
+# served from, so the deployed candidate's own origin must be allowed via a
+# separate regex or every deploy fails when the smoke test submits a real search.
+def _preflight(client, origin):
+    return client.options(
+        "/api/openweathermap",
+        headers={"Origin": origin, "Access-Control-Request-Method": "GET"},
+    )
+
+
+def test_production_allows_candidate_deploy_origin(monkeypatch, reload_main, dist_dir):
+    monkeypatch.setenv("ENV", "production")
+    monkeypatch.setenv("ALLOWED_ORIGINS", "https://weather.kenharmon.net")
+    mod = reload_main()
+    client = TestClient(mod.app)
+
+    candidate_origin = "https://sha-9b07f2a-dot-weatherapp-149500.uc.r.appspot.com"
+    resp = _preflight(client, candidate_origin)
+    assert resp.headers.get("access-control-allow-origin") == candidate_origin
+
+
+@pytest.mark.parametrize(
+    "disallowed_origin",
+    [
+        "https://sha-9b07f2a-dot-weatherapp-149500.uc.r.appspot.com.evil.com",  # suffix spoof
+        "https://sha-9b07f2a-dot-someotherproject.uc.r.appspot.com",  # different GCP project
+        "https://sha-notsevenhex-dot-weatherapp-149500.uc.r.appspot.com",  # malformed version id
+    ],
+)
+def test_production_rejects_lookalike_candidate_origins(
+    monkeypatch, reload_main, dist_dir, disallowed_origin
+):
+    monkeypatch.setenv("ENV", "production")
+    monkeypatch.setenv("ALLOWED_ORIGINS", "https://weather.kenharmon.net")
+    mod = reload_main()
+    client = TestClient(mod.app)
+
+    resp = _preflight(client, disallowed_origin)
+    assert resp.headers.get("access-control-allow-origin") is None
+
+
+def test_production_still_allows_exact_listed_origins(monkeypatch, reload_main, dist_dir):
+    monkeypatch.setenv("ENV", "production")
+    monkeypatch.setenv("ALLOWED_ORIGINS", "https://weather.kenharmon.net")
+    mod = reload_main()
+    client = TestClient(mod.app)
+
+    resp = _preflight(client, "https://weather.kenharmon.net")
+    assert resp.headers.get("access-control-allow-origin") == "https://weather.kenharmon.net"
+
+
+def test_dev_mode_has_no_candidate_origin_regex(monkeypatch, reload_main):
+    monkeypatch.delenv("ENV", raising=False)
+    mod = reload_main()
+    cors_middleware = next(
+        m for m in mod.app.user_middleware if m.cls.__name__ == "CORSMiddleware"
+    )
+    assert cors_middleware.kwargs.get("allow_origin_regex") is None

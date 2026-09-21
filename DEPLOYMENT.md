@@ -49,7 +49,7 @@ Configured under the repo's **Settings → Secrets and variables → Actions**.
 |---|---|
 | `OPENWEATHERMAP_API_KEY` | Backend: OpenWeatherMap API key, rendered into `app.yaml` |
 | `GOOGLE_MAPS_GEOCODING_KEY` | Backend: Google Geocoding API key, rendered into `app.yaml` |
-| `VITE_GOOGLE_MAPS_JAVASCRIPT_KEY` | Frontend build-time: Google Maps JS API key. Ends up publicly visible in the shipped JS bundle by design (that's how the Maps JS API works) — kept as a GitHub secret to avoid it sitting in the workflow source, and protected in production via HTTP-referrer restriction in Google Cloud Console rather than by being hidden. |
+| `VITE_GOOGLE_MAPS_JAVASCRIPT_KEY` | Frontend build-time: Google Maps JS API key. Ends up publicly visible in the shipped JS bundle by design (that's how the Maps JS API works) — kept as a GitHub secret to avoid it sitting in the workflow source, and protected in production via HTTP-referrer restriction in Google Cloud Console rather than by being hidden. Its referrer restriction can't cover the ephemeral non-promoted-candidate hostname (Google doesn't support wildcarding the per-deploy `sha-<hash>-dot-...appspot.com` shape), so the Google Map is expected not to load during the smoke test — `client/scripts/smoke-test.mjs` explicitly tolerates that one error. Accepted as a permanent gap for now; revisit if/when this app moves to Cloud Run, whose tag-based revision URLs are stable and wouldn't have this problem. |
 
 None of the above are ever committed to the repository. `server/app.yaml.template` and the workflow file reference them by name only.
 
