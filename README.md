@@ -9,7 +9,7 @@ A full-stack weather application that displays current and forecast weather info
 ## ✨ Features
 
 - 🔍 Search weather by city name or use browser geolocation
-- 🌤️ Displays current and 8-day weather forecasts
+- 🌤️ Displays current and 10-day weather forecasts
 - 🗺️ Embedded map of the selected location using Google Maps JavaScript API
 - 🧭 Geocoding with Google Maps API
 - ⚡ Fast, modern frontend built with Vite and React
@@ -163,7 +163,7 @@ GOOGLE_MAPS_GEOCODING_KEY=your_google_maps_api_key
 
 ### OpenWeatherMap API
 1. Sign up at [OpenWeatherMap](https://openweathermap.org/api)
-2. Subscribe to the "One Call API 3.0" plan
+2. Subscribe to the "One Call API 4.0" plan
 3. Copy your API key to the backend `.env` file
 
 ### Google Maps API
