@@ -56,13 +56,12 @@ export interface DailyForecast {
     feels_like: FeelsLike;
     humidity: number;
     moon_phase: number;
-    moon_rise: number;
-    moon_set: number;
+    moonrise: number;
+    moonset: number;
     pop: number;
     pressure: number;
     rain?: number;
     snow?: number;
-    summary: string;
     sunrise: number;
     sunset: number;
     temp: DailyTemp;
