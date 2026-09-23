@@ -8,9 +8,14 @@ interface WeekForecastProps {
     timezone: string;
 }
 
-const dateTimeString = (dt: number, timezone: string) => {
+const weekdayString = (dt: number, timezone: string) => {
     const date = new Date(dt * 1000)
-    return date.toLocaleString("en-US", {timeZone: timezone, month: "short", day: "numeric", weekday: "short"})
+    return date.toLocaleString("en-US", {timeZone: timezone, weekday: "short"})
+}
+
+const monthDayString = (dt: number, timezone: string) => {
+    const date = new Date(dt * 1000)
+    return date.toLocaleString("en-US", {timeZone: timezone, month: "short", day: "numeric"})
 }
 
 const openWeatherMapIconStyle = {
@@ -24,7 +29,10 @@ export default function DailyForecasts({daily, timezone}: WeekForecastProps) {
             {daily.map((day) => (
                 <div className={"day-forecast"} key={day.dt}>
                     <div className={"day-datetime"}>
-                        {dateTimeString(day.dt, timezone)}
+                        <div className={"day-date"}>
+                            <div className={"day-weekday"}>{weekdayString(day.dt, timezone)}</div>
+                            <div className={"day-month-day"}>{monthDayString(day.dt, timezone)}</div>
+                        </div>
                         <OpenWeatherMapIcon description={day.weather[0].description} icon={day.weather[0].icon}
                                             style={openWeatherMapIconStyle}/>
                     </div>
@@ -51,17 +59,18 @@ export default function DailyForecasts({daily, timezone}: WeekForecastProps) {
                         </div>
                     </div>
                     <div className={"day-wind"}>
-                        <span className={"day-forecast-label"}>Wind/Gust: </span>
-                        <span className={"day-forecast-wind"}>{Math.round(day.wind_speed)}</span>
-                        <span className={"day-forecast-wind-units"}>mph</span>
+                        <span className={"day-wind-phrase"}>
+                            <span className={"day-forecast-label"}>Wind: </span>
+                            <span className={"day-forecast-wind"}>{Math.round(day.wind_speed)}</span>
+                            <span className={"day-forecast-wind-units"}>mph</span>
+                        </span>
                         {day.wind_gust !== undefined && (
-                            <>
-                                <span className={"day-forecast-wind-units"}> /</span>
-                                <span className={"day-forecast-wind"}> {Math.round(day.wind_gust)}</span>
+                            <span className={"day-wind-phrase"}>
+                                <span className={"day-forecast-label"}>Gust: </span>
+                                <span className={"day-forecast-wind"}>{Math.round(day.wind_gust)}</span>
                                 <span className={"day-forecast-wind-units"}>mph</span>
-                            </>
+                            </span>
                         )}
-
                     </div>
                 </div>
             ))}

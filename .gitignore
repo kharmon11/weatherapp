@@ -3,6 +3,7 @@
 app.yaml
 client/dist
 /local
+.claude/
 
 ### VisualStudioCode template
 .vscode/*

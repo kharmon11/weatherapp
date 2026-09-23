@@ -10,11 +10,10 @@ const makeDay = (overrides: Partial<DailyForecast> = {}): DailyForecast => ({
     feels_like: {day: 70, eve: 65, morn: 55, night: 60},
     humidity: 55,
     moon_phase: 0.5,
-    moon_rise: 1_700_010_000,
-    moon_set: 1_700_050_000,
+    moonrise: 1_700_010_000,
+    moonset: 1_700_050_000,
     pop: 0.42,
     pressure: 1012,
-    summary: "Partly cloudy",
     sunrise: 1_699_990_000,
     sunset: 1_700_030_000,
     temp: {day: 68, eve: 62, max: 72.6, min: 58.2, morn: 55, night: 60},
@@ -36,17 +35,18 @@ describe("DailyForecasts", () => {
         expect(screen.getByText("12")).toBeInTheDocument()
     })
 
-    it("shows the wind gust when present", () => {
-        render(<DailyForecasts daily={[makeDay({wind_gust: 25.9})]} timezone="America/New_York"/>)
+    it("shows wind speed and gust as separate labeled phrases when gust is present", () => {
+        const {container} = render(<DailyForecasts daily={[makeDay({wind_speed: 12.4, wind_gust: 25.9})]} timezone="America/New_York"/>)
 
-        expect(screen.getByText("26")).toBeInTheDocument()
+        const windRow = container.querySelector(".day-wind")
+        expect(windRow?.textContent).toBe("Wind: 12mphGust: 26mph")
     })
 
-    it("omits the gust display when wind_gust is undefined", () => {
+    it("omits the gust phrase and labels the row 'Wind' when wind_gust is undefined", () => {
         const {container} = render(<DailyForecasts daily={[makeDay({wind_gust: undefined})]} timezone="America/New_York"/>)
 
         const windRow = container.querySelector(".day-wind")
-        expect(windRow?.textContent).toBe("Wind/Gust: 12mph")
+        expect(windRow?.textContent).toBe("Wind: 12mph")
     })
 
     it("renders one .day-forecast per entry, and none when daily is empty", () => {
