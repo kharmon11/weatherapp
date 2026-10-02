@@ -124,6 +124,7 @@ The frontend will be available at `http://localhost:5173`
     │   └── services
     ├── app.yaml
     ├── app.yaml.template
+    ├── Dockerfile
     ├── pytest.ini
     ├── requirements-dev.txt
     ├── requirements.txt

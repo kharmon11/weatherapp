@@ -1,0 +1,33 @@
+# Build context is the repo root (see server/Dockerfile).
+.git/
+.github/
+.idea/
+.claude/
+.DS_Store
+**/.DS_Store
+
+# Secrets and local config
+**/.env
+**/.env.*
+!**/.env.example
+server/app.yaml
+
+# Dependencies and build output are produced inside the image
+**/node_modules/
+node_modules/
+venv/
+**/venv/
+**/__pycache__/
+client/dist/
+server/app/dist/
+client/coverage/
+
+# Tests and tooling not needed at runtime
+server/tests/
+server/.pytest_cache/
+server/.coverage
+server/requirements-dev.txt
+server/pytest.ini
+.pytest_cache/
+scripts/
+local/

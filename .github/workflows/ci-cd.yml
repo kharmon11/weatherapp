@@ -169,3 +169,107 @@ jobs:
             --splits="${{ steps.deploy.outputs.version_id }}=1" \
             --project="${{ vars.GCP_PROJECT_ID }}" \
             --quiet
+
+  deploy-cloud-run:
+    name: Deploy to Cloud Run
+    needs: [backend-tests, frontend-tests]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      REGION: us-central1
+      SERVICE: weatherapp
+      IMAGE: ${{ vars.ARTIFACT_REGISTRY_PATH }}:${{ github.sha }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Authenticate to Google Cloud (Workload Identity Federation)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+
+      - name: Build image
+        run: |
+          docker build --platform linux/amd64 \
+            -f server/Dockerfile \
+            --build-arg VITE_GOOGLE_MAPS_JAVASCRIPT_KEY="${{ secrets.VITE_GOOGLE_MAPS_JAVASCRIPT_KEY }}" \
+            --build-arg VITE_GOOGLE_MAPS_MAP_ID="${{ vars.VITE_GOOGLE_MAPS_MAP_ID }}" \
+            --build-arg VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID="${{ vars.VITE_GOOGLE_ANALYTICS_MEASUREMENT_ID }}" \
+            -t "$IMAGE" \
+            .
+
+      - name: Push image
+        run: docker push "$IMAGE"
+
+      # ALLOWED_ORIGINS contains commas, which gcloud would treat as the
+      # separator between env vars, so a custom delimiter (^@^) is required.
+      - name: Deploy candidate revision (no traffic)
+        run: |
+          gcloud run deploy "$SERVICE" \
+            --image="$IMAGE" \
+            --region="$REGION" \
+            --project="${{ vars.GCP_PROJECT_ID }}" \
+            --service-account="${{ vars.RUNTIME_SA_EMAIL }}" \
+            --set-env-vars="^@^ENV=production@ALLOWED_ORIGINS=${{ vars.ALLOWED_ORIGINS }}" \
+            --set-secrets=OPENWEATHERMAP_API_KEY=weatherapp-openweathermap-key:latest,GOOGLE_MAPS_GEOCODING_KEY=weatherapp-geocoding-key:latest \
+            --allow-unauthenticated \
+            --min-instances=0 \
+            --max-instances=2 \
+            --memory=512Mi \
+            --no-traffic \
+            --tag=candidate
+
+      - name: Get candidate URL
+        id: candidate
+        run: |
+          URL=$(gcloud run services describe "$SERVICE" \
+            --region="$REGION" \
+            --project="${{ vars.GCP_PROJECT_ID }}" \
+            --format=json | jq -r '.status.traffic[] | select(.tag=="candidate") | .url')
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 11
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: "pnpm"
+          cache-dependency-path: client/pnpm-lock.yaml
+
+      - name: Install frontend dependencies
+        working-directory: client
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browser
+        working-directory: client
+        run: npx playwright install --with-deps chromium
+
+      # Unchanged script; only the URL differs. A failure here skips promotion
+      # and leaves the live revision serving all traffic.
+      - name: Smoke test candidate revision
+        working-directory: client
+        run: node scripts/smoke-test.mjs "${{ steps.candidate.outputs.url }}"
+
+      - name: Promote to 100% traffic
+        run: |
+          gcloud run services update-traffic "$SERVICE" \
+            --region="$REGION" \
+            --project="${{ vars.GCP_PROJECT_ID }}" \
+            --to-latest
+
+      # Image retention is deliberately not handled in this pipeline: set an
+      # Artifact Registry cleanup policy on the repository instead.
