@@ -2,6 +2,8 @@
 
 WeatherApp deploys automatically to Google Cloud App Engine via GitHub Actions. There is no routine manual deploy step — merging a pull request into `master` is the only action that ships code.
 
+> **Migration in progress:** the app is being moved to Cloud Run. Until the cutover is finished, `ci-cd.yml` has *two* deploy jobs that both run on every `master` push — `deploy` (App Engine, described below, still serving the live domains) and `deploy-cloud-run` (see [Cloud Run migration](#cloud-run-migration-in-progress)).
+
 ## Pipeline overview
 
 Defined in [`.github/workflows/ci-cd.yml`](.github/workflows/ci-cd.yml).
@@ -94,6 +96,40 @@ gcloud app services set-traffic default \
 ```
 
 Old, un-promoted versions (including ones left behind by failed smoke tests) accumulate in App Engine over time — there's currently no automated cleanup. Pruning them periodically via `gcloud app versions delete` is a manual, low-priority housekeeping task, not something the pipeline handles.
+
+## Cloud Run migration (in progress)
+
+The `deploy-cloud-run` job in `.github/workflows/ci-cd.yml` runs alongside the App Engine `deploy` job on every push to `master`. It deploys to a Cloud Run service named `weatherapp` in `us-central1`. Until DNS is moved, `weather.kenharmon.net` and `wx.kenharmon.net` still point at App Engine, so this job does not affect live users. The App Engine job (and everything above) is removed once the cutover is complete.
+
+**What the job does** (same shape as the App Engine flow): builds the image from [`server/Dockerfile`](server/Dockerfile) (repo root as the build context, filtered by [`.dockerignore`](.dockerignore); the frontend is built inside the image from the `VITE_*` build args), pushes it to Artifact Registry tagged with the commit SHA, deploys it with `--no-traffic --tag=candidate`, runs the same `client/scripts/smoke-test.mjs` against the candidate URL, and only then runs `gcloud run services update-traffic ... --to-latest`. A failed smoke test leaves the previous revision serving all traffic.
+
+**Additional GitHub variables** (Settings → Secrets and variables → Actions → Variables):
+
+| Name | Purpose |
+|---|---|
+| `ARTIFACT_REGISTRY_PATH` | Image path without a tag, e.g. `us-central1-docker.pkg.dev/<project-id>/weatherapp/app` |
+| `RUNTIME_SA_EMAIL` | Service account the container runs as (`weatherapp-runtime@<project-id>.iam.gserviceaccount.com`) |
+
+The existing `GCP_*`, `ALLOWED_ORIGINS`, and `VITE_*` variables and the `VITE_GOOGLE_MAPS_JAVASCRIPT_KEY` secret are reused as-is. The two backend API keys are **not** read from GitHub by this job: the service gets `OPENWEATHERMAP_API_KEY` and `GOOGLE_MAPS_GEOCODING_KEY` from Secret Manager (`weatherapp-openweathermap-key`, `weatherapp-geocoding-key`, mounted as env vars at `:latest`). The GitHub copies of those two secrets stay only for the App Engine job until it is retired. Because `:latest` is resolved when an instance starts, a rotated secret version takes effect after the next deploy (or a new revision).
+
+**GCP-side setup (done once, by hand):**
+- Artifact Registry Docker repository `weatherapp` in `us-central1` (separate from App Engine's `gae-standard` repository).
+- Secret Manager secrets above, readable (`roles/secretmanager.secretAccessor`) by the `weatherapp-runtime` service account only.
+- The existing deployer service account additionally holds `roles/run.admin` (project), `roles/artifactregistry.writer` (on the `weatherapp` repository), and `roles/iam.serviceAccountUser` (on `weatherapp-runtime` only).
+- The Cloud Run service was created by a manual first deploy (without `--no-traffic`, from an image built locally with the real `VITE_*` values). The pipeline's `--no-traffic --tag=candidate` → promote flow has been confirmed to work against the existing service.
+
+**Rollback on Cloud Run** — shift traffic back to an earlier revision without a new deploy:
+
+```bash
+gcloud run revisions list --service=weatherapp --region=us-central1 --project=<project-id>
+gcloud run services update-traffic weatherapp \
+  --to-revisions=<previous-revision>=100 \
+  --region=us-central1 --project=<project-id>
+```
+
+**Temporary Maps referrer entry:** to test the map before the cutover, the service's own `run.app` URL was added to the Maps JS key's HTTP-referrer restriction. Remove it once the custom domains are pointed at Cloud Run. Per-deploy `candidate---...run.app` URLs still can't be added (Google doesn't support that kind of wildcard), so the smoke test continues to intercept the Maps script.
+
+**Still to do at cutover** (not yet done): point `weather.kenharmon.net` / `wx.kenharmon.net` at Cloud Run via domain mappings and DNS, then remove the App Engine job, `server/app.yaml.template`, and the App Engine-specific docs.
 
 ## Known limitations
 
