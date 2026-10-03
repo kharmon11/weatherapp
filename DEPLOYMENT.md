@@ -2,7 +2,7 @@
 
 WeatherApp deploys automatically to Google Cloud App Engine via GitHub Actions. There is no routine manual deploy step — merging a pull request into `master` is the only action that ships code.
 
-> **Migration in progress:** the app is being moved to Cloud Run. Until the cutover is finished, `ci-cd.yml` has *two* deploy jobs that both run on every `master` push — `deploy` (App Engine, described below, still serving the live domains) and `deploy-cloud-run` (see [Cloud Run migration](#cloud-run-migration-in-progress)).
+> **Now served from Cloud Run:** `weather.kenharmon.net` and `wx.kenharmon.net` were moved to Cloud Run (see [Cloud Run deployment](#cloud-run-deployment)). `ci-cd.yml` still has *two* deploy jobs that both run on every `master` push: `deploy-cloud-run` (the live pipeline) and `deploy` (App Engine, described below). The App Engine job is now only a temporary fallback and will be removed when App Engine is retired. Everything below that describes App Engine is therefore historical until then.
 
 ## Pipeline overview
 
@@ -55,7 +55,7 @@ Note: `VITE_API_BASE_URL` (used locally, see the frontend `.env` example in `REA
 |---|---|
 | `OPENWEATHERMAP_API_KEY` | Backend: OpenWeatherMap API key, rendered into `app.yaml` |
 | `GOOGLE_MAPS_GEOCODING_KEY` | Backend: Google Geocoding API key, rendered into `app.yaml` |
-| `VITE_GOOGLE_MAPS_JAVASCRIPT_KEY` | Frontend build-time: Google Maps JS API key. Ends up publicly visible in the shipped JS bundle by design (that's how the Maps JS API works) — kept as a GitHub secret to avoid it sitting in the workflow source, and protected in production via HTTP-referrer restriction in Google Cloud Console rather than by being hidden. Its referrer restriction can't cover the ephemeral non-promoted-candidate hostname (Google doesn't support wildcarding the per-deploy `sha-<hash>-dot-...appspot.com` shape) — one of two reasons the real Maps script is never actually called during the smoke test (see the gap noted in the pipeline overview above), rather than something worked around per-error. Revisit if/when this app moves to Cloud Run, whose tag-based revision URLs are stable and wouldn't have this problem. |
+| `VITE_GOOGLE_MAPS_JAVASCRIPT_KEY` | Frontend build-time: Google Maps JS API key. Ends up publicly visible in the shipped JS bundle by design (that's how the Maps JS API works) — kept as a GitHub secret to avoid it sitting in the workflow source, and protected in production via HTTP-referrer restriction in Google Cloud Console rather than by being hidden. Its referrer restriction can't cover the ephemeral non-promoted-candidate hostname (Google doesn't support wildcarding the per-deploy `sha-<hash>-dot-...appspot.com` shape) — one of two reasons the real Maps script is never actually called during the smoke test (see the gap noted in the pipeline overview above), rather than something worked around per-error. The app has since moved to Cloud Run, whose tagged candidate URL is stable and could be allowed as an exact referrer, which removes the hostname problem; the missing GPU on the runners remains, so the smoke test still intercepts the Maps script. |
 
 None of the above are ever committed to the repository. `server/app.yaml.template` and the workflow file reference them by name only.
 
@@ -97,9 +97,9 @@ gcloud app services set-traffic default \
 
 Old, un-promoted versions (including ones left behind by failed smoke tests) accumulate in App Engine over time — there's currently no automated cleanup. Pruning them periodically via `gcloud app versions delete` is a manual, low-priority housekeeping task, not something the pipeline handles.
 
-## Cloud Run migration (in progress)
+## Cloud Run deployment
 
-The `deploy-cloud-run` job in `.github/workflows/ci-cd.yml` runs alongside the App Engine `deploy` job on every push to `master`. It deploys to a Cloud Run service named `weatherapp` in `us-central1`. Until DNS is moved, `weather.kenharmon.net` and `wx.kenharmon.net` still point at App Engine, so this job does not affect live users. The App Engine job (and everything above) is removed once the cutover is complete.
+The `deploy-cloud-run` job in `.github/workflows/ci-cd.yml` runs alongside the App Engine `deploy` job on every push to `master`. It deploys to a Cloud Run service named `weatherapp` in `us-central1`, which now serves `weather.kenharmon.net` and `wx.kenharmon.net`. The App Engine job (and everything above that describes App Engine) is removed once that service is retired.
 
 **What the job does** (same shape as the App Engine flow): builds the image from [`server/Dockerfile`](server/Dockerfile) (repo root as the build context, filtered by [`.dockerignore`](.dockerignore); the frontend is built inside the image from the `VITE_*` build args), pushes it to Artifact Registry tagged with the commit SHA, deploys it with `--no-traffic --tag=candidate`, runs the same `client/scripts/smoke-test.mjs` against the candidate URL, and only then runs `gcloud run services update-traffic ... --to-latest`. A failed smoke test leaves the previous revision serving all traffic.
 
@@ -127,13 +127,13 @@ gcloud run services update-traffic weatherapp \
   --region=us-central1 --project=<project-id>
 ```
 
-**Temporary Maps referrer entry:** to test the map before the cutover, the service's own `run.app` URL was added to the Maps JS key's HTTP-referrer restriction. Remove it once the custom domains are pointed at Cloud Run. Per-deploy `candidate---...run.app` URLs still can't be added (Google doesn't support that kind of wildcard), so the smoke test continues to intercept the Maps script.
+**Temporary Maps referrer entry:** to test the map before the cutover, the service's own `run.app` URL was added to the Maps JS key's HTTP-referrer restriction. It is no longer needed now that the custom domains point at Cloud Run and should be removed from the key. The `candidate---...run.app` URL the pipeline smoke-tests is stable across deploys (it is derived from the tag and the service), so it could be added as an exact referrer, but that would not change the smoke test: the real Maps script still can't render on GitHub's GPU-less runners, so the test continues to intercept it.
 
-**Still to do at cutover** (not yet done): point `weather.kenharmon.net` / `wx.kenharmon.net` at Cloud Run via domain mappings and DNS, then remove the App Engine job, `server/app.yaml.template`, and the App Engine-specific docs.
+**Still to do:** retire App Engine (delete versions, disable the app, clear the `gae-standard` images and staging buckets), then remove the App Engine job, `server/app.yaml.template`, `server/.gcloudignore`, the `appspot.com` entries from `ALLOWED_ORIGINS`, the deployer service account's App Engine roles, and the App Engine-specific parts of these docs.
 
 ## Known limitations
 
-- **The smoke test does not verify the Google Map renders.** The real Maps JS script is intercepted and never actually loaded during the check (see `client/scripts/smoke-test.mjs`). It can't reliably load in any headless CI browser regardless of configuration: its HTTP-referrer restriction can't cover the ephemeral per-deploy hostname, and separately, headless Chromium has no GPU on GitHub's runners, so the WebGL-dependent map rendering fails too. Both were hit and confirmed directly, not assumed. If the map's own integration ever breaks (e.g. wrong Map ID, broken marker logic), this pipeline would not catch it — that would need to be checked manually against the promoted URL after a deploy. Revisit if/when this app moves to Cloud Run, whose tag-based revision URLs don't have this problem.
+- **The smoke test does not verify the Google Map renders.** The real Maps JS script is intercepted and never actually loaded during the check (see `client/scripts/smoke-test.mjs`). It can't reliably load in any headless CI browser regardless of configuration: its HTTP-referrer restriction can't cover the ephemeral per-deploy hostname, and separately, headless Chromium has no GPU on GitHub's runners, so the WebGL-dependent map rendering fails too. Both were hit and confirmed directly, not assumed. If the map's own integration ever breaks (e.g. wrong Map ID, broken marker logic), this pipeline would not catch it — that would need to be checked manually against the promoted URL after a deploy. Now that the app is on Cloud Run, the hostname half of this no longer applies (the tagged candidate URL is stable and could be allowed as an exact referrer), but the GPU half does, so this gap remains.
 - **No manual approval gate.** Promotion is fully automatic once the smoke test passes — there's no human-in-the-loop review step before traffic shifts. This was a deliberate choice (see project history); adding one would mean splitting the `deploy` job and configuring a GitHub Environment with required reviewers.
 - **No version cleanup.** Every push to `master` leaves a version behind, promoted or not.
 - **Two GitHub Actions still show a Node.js 20 deprecation warning** (`google-github-actions/auth`, `google-github-actions/deploy-appengine`) — GitHub auto-shims them to Node 24 for now, but this depends on Google shipping an updated release before Node 20 support is fully removed from Actions runners (expected fall 2026). Worth checking their release notes periodically.
