@@ -14,7 +14,7 @@ A full-stack weather application that displays current and forecast weather info
 - 🧭 Geocoding with Google Maps API
 - ⚡ Fast, modern frontend built with Vite and React
 - 📡 Backend API powered by FastAPI
-- 🌍 Hosted on Google Cloud App Engine
+- 🌍 Hosted on Google Cloud Run
 
 ## 🧰 Tech Stack
 
@@ -23,7 +23,7 @@ A full-stack weather application that displays current and forecast weather info
 | Frontend    | React 19.1.0, TypeScript, Vite, Sass, @vis.gl/react-google-maps  |
 | Backend     | FastAPI, Python 3.11, Gunicorn, Uvicorn                          |
 | Data APIs   | OpenWeatherMap, Google Maps API                                  |
-| Deployment  | Google Cloud App Engine                                          |
+| Deployment  | Google Cloud Run (Docker)                                        |
 | Node.js     | v22.11.0                                                         |
 | Dependencies| Axios, React Icons, Recharts, Pydantic                           |
 
@@ -190,7 +190,7 @@ GOOGLE_MAPS_GEOCODING_KEY=your_google_maps_api_key
 
 ## 🚀 Deployment
 
-The application deploys automatically to Google Cloud App Engine via a GitHub Actions pipeline — merging a pull request into `master` is the only step involved. The pipeline builds the frontend, deploys the new code as a non-promoted App Engine version, runs an automated smoke test against it, and only then shifts live traffic to it; a failed smoke test leaves production untouched.
+The application is served from Google Cloud Run and deploys automatically via a GitHub Actions pipeline — merging a pull request into `master` is the only step involved. The pipeline builds a container image, deploys it as a no-traffic Cloud Run revision, runs an automated smoke test against it, and only then shifts live traffic to it; a failed smoke test leaves production untouched. (An App Engine deploy job still runs alongside it as a temporary fallback until that service is retired.)
 
 See [`DEPLOYMENT.md`](DEPLOYMENT.md) for the full pipeline walkthrough, required configuration, and rollback procedure.
 
