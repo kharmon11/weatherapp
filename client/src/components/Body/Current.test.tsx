@@ -12,11 +12,16 @@ vi.mock("./GoogleMap.tsx", () => ({
         <div data-testid="google-map-mock" data-props={JSON.stringify(props)}/>
     )
 }))
-vi.mock("./MinutelyChart.tsx", () => ({
-    default: (props: Record<string, unknown>) => (
-        <div data-testid="minutely-chart-mock" data-props={JSON.stringify(props)}/>
-    )
-}))
+// The factory runs when the module is first imported, so this counts chart-chunk loads.
+const chartModuleLoads = vi.hoisted(() => ({count: 0}))
+vi.mock("./MinutelyChart.tsx", () => {
+    chartModuleLoads.count++
+    return {
+        default: (props: Record<string, unknown>) => (
+            <div data-testid="minutely-chart-mock" data-props={JSON.stringify(props)}/>
+        )
+    }
+})
 
 const getProps = (el: HTMLElement) => JSON.parse(el.dataset.props ?? "{}")
 
@@ -78,6 +83,15 @@ describe("Current", () => {
         expect(screen.queryByTestId("minutely-chart-mock")).not.toBeInTheDocument()
     })
 
+    it("does not load the chart chunk when there is no precipitation", () => {
+        // Must run before any test that renders precipitation: the module,
+        // once imported, stays loaded for the rest of this file.
+        const minutely = [{dt: 1, precipitation: 0}]
+        render(<Current current={makeCurrent()} {...baseProps} minutely={minutely}/>)
+
+        expect(chartModuleLoads.count).toBe(0)
+    })
+
     it("hides the precip panel when minutely data has zero precipitation throughout", () => {
         const minutely = [{dt: 1, precipitation: 0}, {dt: 2, precipitation: 0}]
         const {container} = render(<Current current={makeCurrent()} {...baseProps} minutely={minutely}/>)
@@ -85,20 +99,20 @@ describe("Current", () => {
         expect(container.querySelector(".current-precip")).not.toBeInTheDocument()
     })
 
-    it("shows the precip panel and MinutelyChart when any minute has precipitation", () => {
+    it("shows the precip panel and MinutelyChart when any minute has precipitation", async () => {
         const minutely = [{dt: 1, precipitation: 0}, {dt: 2, precipitation: 0.5}]
         const {container} = render(<Current current={makeCurrent()} {...baseProps} minutely={minutely}/>)
 
         expect(container.querySelector(".current-precip")).toBeInTheDocument()
-        expect(screen.getByTestId("minutely-chart-mock")).toBeInTheDocument()
+        expect(await screen.findByTestId("minutely-chart-mock")).toBeInTheDocument()
     })
 
-    it("passes the rain/snow classification derived from the weather description to MinutelyChart", () => {
+    it("passes the rain/snow classification derived from the weather description to MinutelyChart", async () => {
         const minutely = [{dt: 1, precipitation: 0.5}]
         const current = makeCurrent({weather: [{description: "Light Snow", icon: "13d", id: 601, main: "Snow"}]})
         render(<Current current={current} {...baseProps} minutely={minutely}/>)
 
-        expect(getProps(screen.getByTestId("minutely-chart-mock")).rainSnow).toBe("snow")
+        expect(getProps(await screen.findByTestId("minutely-chart-mock")).rainSnow).toBe("snow")
     })
 
     it("shows a rain rate line when current.rain is present", () => {

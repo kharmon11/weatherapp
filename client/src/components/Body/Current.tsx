@@ -1,9 +1,9 @@
 import './Current.sass';
+import {Suspense, lazy} from "react";
 import type {MapMouseEvent} from "@vis.gl/react-google-maps";
 
 import WindVane from "./WindVane.tsx";
 import GoogleMap from "./GoogleMap.tsx";
-import MinutelyChart from "./MinutelyChart.tsx";
 import OpenWeatherMapIcon from "../common/OpenWeatherMapIcon.tsx";
 
 import cloudinessText from "../../utils/cloudinessText.ts";
@@ -11,6 +11,11 @@ import rainOrSnow from "../../utils/rainOrSnow.ts";
 import mmInchConvert from "../../utils/mmInchConvert.ts";
 import roundToDecimal from "../../utils/roundToDecimal.ts";
 import type {CurrentWeather, MinutelyForecast} from "../../types/openweathermap.ts";
+
+// Recharts is the largest chunk in the app and the chart only renders when
+// precipitation is forecast, so load it on demand. .current-precip has a fixed
+// size, so the empty fallback causes no layout shift.
+const MinutelyChart = lazy(() => import("./MinutelyChart.tsx"))
 
 interface CurrentProps {
     current: CurrentWeather;
@@ -106,11 +111,13 @@ export default function Current({
                                 Snow: {roundToDecimal(mmInchConvert(current.snow["1h"]), 2)}in/hr
                             </div>)
                         }
-                        <MinutelyChart
-                            minutes={minutely}
-                            timezone={timezone}
-                            rainSnow={rainOrSnow(current.weather[0].description.toLowerCase())}
-                        />
+                        <Suspense fallback={null}>
+                            <MinutelyChart
+                                minutes={minutely}
+                                timezone={timezone}
+                                rainSnow={rainOrSnow(current.weather[0].description.toLowerCase())}
+                            />
+                        </Suspense>
                     </div>
                 )}
                 <div className={"google-map current-weather-child"}>

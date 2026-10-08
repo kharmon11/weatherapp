@@ -1,13 +1,15 @@
 import './Body.sass'
-import {Suspense, lazy} from 'react'
+import {Suspense, lazy, useEffect} from 'react'
 
 import type {MapMouseEvent} from "@vis.gl/react-google-maps";
 
 import useWeather from "../../hooks/useWeather.tsx"
 import Spinner from "../common/Spinner.tsx"
 import LocationForm from "./LocationForm.tsx";
-const Current = lazy(() => import("./Current"))
-const WeekForecast = lazy(() => import("./WeekForecast/WeekForecast.tsx"))
+const loadCurrent = () => import("./Current")
+const loadWeekForecast = () => import("./WeekForecast/WeekForecast.tsx")
+const Current = lazy(loadCurrent)
+const WeekForecast = lazy(loadWeekForecast)
 
 export default function Body() {
   const {
@@ -19,6 +21,16 @@ export default function Body() {
     fetchWeatherByGeolocation,
     fetchWeatherByMapClick
   } = useWeather();
+
+  // Start downloading the result components as soon as a request begins, so the
+  // chunks load in parallel with the API call instead of after it. import() is
+  // deduplicated, so React.lazy reuses these same downloads.
+  useEffect(() => {
+    if (isLoading) {
+      loadCurrent().catch(() => {})
+      loadWeekForecast().catch(() => {})
+    }
+  }, [isLoading])
 
   // Fetch weather data when #location-submit button is clicked
   const handleSubmit = async (locationInput: string) => {
