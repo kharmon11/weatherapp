@@ -2,6 +2,7 @@ import httpx
 import asyncio
 import logging
 from fastapi import HTTPException
+from ..core.cache import TTLCache
 from ..core.config import settings
 
 logger = logging.getLogger("openweathermap")
@@ -9,6 +10,27 @@ logger = logging.getLogger("openweathermap")
 CURRENT_URL = "https://api.openweathermap.org/data/4.0/onecall/current"
 MINUTELY_URL = "https://api.openweathermap.org/data/4.0/onecall/timeline/1min"
 DAILY_URL = "https://api.openweathermap.org/data/4.0/onecall/timeline/1day"
+
+# OpenWeatherMap refreshes the product every ~10 minutes and documents no
+# per-endpoint schedule, so each endpoint gets its own conservative TTL: the
+# minutely series is anchored on "now" so it expires fastest. Cached payloads
+# are shared between callers and must be treated as read-only.
+_CACHE_TTLS = {CURRENT_URL: 5 * 60, MINUTELY_URL: 2 * 60, DAILY_URL: 10 * 60}
+_caches = {url: TTLCache(maxsize=256, ttl=ttl) for url, ttl in _CACHE_TTLS.items()}
+
+
+async def _fetch_cached(client: httpx.AsyncClient, url: str, params: dict, retries: int):
+    # Key on ~110 m cells (3 decimals), matching OpenWeather's advertised
+    # 100 m resolution; the request itself still uses the exact coordinates.
+    key = (round(params["lat"], 3), round(params["lon"], 3))
+    cache = _caches[url]
+    cached = cache.get(key)
+    if cached is not None:
+        return cached
+    data = await _fetch(client, url, params, retries)  # raises on failure: errors are never cached
+    cache.set(key, data)
+    return data
+
 
 async def _fetch(client: httpx.AsyncClient, url: str, params: dict, retries: int):
     for attempt in range(1, retries + 1):
@@ -43,9 +65,9 @@ async def get_openweathermap_data(latitude: float, longitude: float, retries: in
     limits = httpx.Limits(max_keepalive_connections=0)
     async with httpx.AsyncClient(timeout=timeout, http2=False, limits=limits) as client:
         current_response, minutely_response, daily_response = await asyncio.gather(
-            _fetch(client, CURRENT_URL, params, retries),
-            _fetch(client, MINUTELY_URL, params, retries),
-            _fetch(client, DAILY_URL, params, retries),
+            _fetch_cached(client, CURRENT_URL, params, retries),
+            _fetch_cached(client, MINUTELY_URL, params, retries),
+            _fetch_cached(client, DAILY_URL, params, retries),
         )
 
     return {

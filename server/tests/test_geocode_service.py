@@ -129,3 +129,58 @@ async def test_geocode_coordinate_strings_use_each_axis_own_hemisphere(
 
     assert result["lat_string"] == expected_lat
     assert result["lon_string"] == expected_lon
+
+
+@respx.mock
+async def test_geocode_repeat_address_is_served_from_cache():
+    route = respx.get(GEOCODE_URL).mock(
+        return_value=httpx.Response(200, json=_ok_response(FULL_COMPONENTS))
+    )
+
+    first = await geocode("New York, NY")
+    second = await geocode("  new   YORK, ny ")  # same address, different spacing/case
+
+    assert route.call_count == 1
+    assert second == first
+
+
+@respx.mock
+async def test_geocode_different_addresses_are_cached_separately():
+    route = respx.get(GEOCODE_URL).mock(
+        return_value=httpx.Response(200, json=_ok_response(FULL_COMPONENTS))
+    )
+
+    await geocode("New York, NY")
+    await geocode("Boston, MA")
+
+    assert route.call_count == 2
+
+
+@respx.mock
+async def test_geocode_coordinate_pairs_bypass_the_cache():
+    route = respx.get(GEOCODE_URL).mock(
+        return_value=httpx.Response(200, json=_ok_response(FULL_COMPONENTS))
+    )
+
+    await geocode("42.360123,-71.058912")
+    await geocode("42.360123,-71.058912")
+    await geocode(" -33.8688 , 151.2093 ")
+
+    assert route.call_count == 3
+
+
+@respx.mock
+async def test_geocode_errors_are_not_cached():
+    route = respx.get(GEOCODE_URL).mock(
+        side_effect=[
+            httpx.Response(200, json={"status": "ZERO_RESULTS"}),
+            httpx.Response(200, json=_ok_response(FULL_COMPONENTS)),
+        ]
+    )
+
+    with pytest.raises(HTTPException):
+        await geocode("Nowhereville")
+    result = await geocode("Nowhereville")  # second attempt must hit upstream again
+
+    assert route.call_count == 2
+    assert result["location_text"] == "New York, NY, US"

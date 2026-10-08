@@ -119,3 +119,74 @@ async def test_get_openweathermap_data_request_error_raises_502():
         await get_openweathermap_data(40.7128, -74.0060, retries=1)
 
     assert exc_info.value.status_code == 502
+
+
+def _mock_all_ok():
+    return (
+        respx.get(CURRENT_URL).mock(return_value=httpx.Response(200, json=CURRENT_PAYLOAD)),
+        respx.get(MINUTELY_URL).mock(return_value=httpx.Response(200, json=MINUTELY_PAYLOAD)),
+        respx.get(DAILY_URL).mock(return_value=httpx.Response(200, json=DAILY_PAYLOAD)),
+    )
+
+
+@respx.mock
+async def test_repeat_lookup_is_served_from_cache():
+    routes = _mock_all_ok()
+
+    first = await get_openweathermap_data(40.7128, -74.0060)
+    second = await get_openweathermap_data(40.7128, -74.0060)
+
+    assert [r.call_count for r in routes] == [1, 1, 1]
+    assert second == first
+
+
+@respx.mock
+async def test_cache_key_is_a_110m_cell_nearby_points_share_but_farther_points_do_not():
+    routes = _mock_all_ok()
+
+    await get_openweathermap_data(40.7128, -74.0060)
+    await get_openweathermap_data(40.7131, -74.0058)  # ~35 m away: same 3-decimal cell
+    assert [r.call_count for r in routes] == [1, 1, 1]
+
+    await get_openweathermap_data(40.7149, -74.0060)  # ~230 m away: next cell (but the same 2-decimal cell)
+    assert [r.call_count for r in routes] == [2, 2, 2]
+
+    await get_openweathermap_data(40.7200, -74.0060)  # ~800 m away
+    assert [r.call_count for r in routes] == [3, 3, 3]
+
+
+@respx.mock
+async def test_each_endpoint_expires_on_its_own_ttl(monkeypatch):
+    clock = {"now": 1000.0}
+    for cache in owm_module._caches.values():
+        monkeypatch.setattr(cache, "_clock", lambda: clock["now"])
+    current_route, minutely_route, daily_route = _mock_all_ok()
+
+    await get_openweathermap_data(40.7128, -74.0060)
+
+    clock["now"] += 3 * 60  # past minutely (2 min), within current (5) and daily (10)
+    await get_openweathermap_data(40.7128, -74.0060)
+    assert (current_route.call_count, minutely_route.call_count, daily_route.call_count) == (1, 2, 1)
+
+    clock["now"] += 3 * 60  # 6 min total: current has now expired too
+    await get_openweathermap_data(40.7128, -74.0060)
+    assert (current_route.call_count, minutely_route.call_count, daily_route.call_count) == (2, 3, 1)
+
+    clock["now"] += 5 * 60  # 11 min total: daily expired
+    await get_openweathermap_data(40.7128, -74.0060)
+    assert daily_route.call_count == 2
+
+
+@respx.mock
+async def test_failed_lookup_is_not_cached():
+    respx.get(CURRENT_URL).mock(
+        side_effect=[httpx.Response(500), httpx.Response(200, json=CURRENT_PAYLOAD)]
+    )
+    respx.get(MINUTELY_URL).mock(return_value=httpx.Response(200, json=MINUTELY_PAYLOAD))
+    respx.get(DAILY_URL).mock(return_value=httpx.Response(200, json=DAILY_PAYLOAD))
+
+    with pytest.raises(HTTPException):
+        await get_openweathermap_data(40.7128, -74.0060)
+
+    result = await get_openweathermap_data(40.7128, -74.0060)  # retried upstream, now succeeds
+    assert result["current"] == CURRENT_PAYLOAD["data"][0]
