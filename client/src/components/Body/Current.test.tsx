@@ -56,6 +56,17 @@ const baseProps = {
 }
 
 describe("Current", () => {
+    it("keeps the same map instance (does not remount it) when the location changes", () => {
+        const {rerender} = render(<Current current={makeCurrent()} {...baseProps}/>)
+        const mapBefore = screen.getByTestId("google-map-mock")
+
+        rerender(<Current current={makeCurrent()} {...baseProps} lat={39.74} lon={-104.99}/>)
+
+        const mapAfter = screen.getByTestId("google-map-mock")
+        expect(mapAfter).toBe(mapBefore) // a key on the map would replace the DOM node
+        expect(getProps(mapAfter)).toMatchObject({lat: 39.74, lon: -104.99})
+    })
+
     it("renders temp, feels-like, dew point, and humidity", () => {
         const {container} = render(<Current current={makeCurrent()} {...baseProps}/>)
 

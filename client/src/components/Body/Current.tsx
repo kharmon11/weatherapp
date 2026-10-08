@@ -131,7 +131,6 @@ export default function Current({
                         lat={lat}
                         lon={lon}
                         handleMapClick={handleMapClick}
-                        key={`${lat}-${lon}`}
                     />
                     <div>Click on map to get forecast</div>
                 </div>
