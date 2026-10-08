@@ -108,3 +108,89 @@ def test_production_still_allows_exact_listed_origins(monkeypatch, reload_main, 
 
     resp = _preflight(client, "https://weather.kenharmon.net")
     assert resp.headers.get("access-control-allow-origin") == "https://weather.kenharmon.net"
+
+
+@pytest.fixture
+def prod_client(monkeypatch, reload_main, dist_dir):
+    monkeypatch.setenv("ENV", "production")
+    monkeypatch.setenv("ALLOWED_ORIGINS", "https://weather.kenharmon.net")
+    mod = reload_main()
+    assets_dir = os.path.join(dist_dir, "assets")
+    asset_path = os.path.join(assets_dir, "index-test123.js")
+    created_assets_dir = not os.path.isdir(assets_dir)
+    os.makedirs(assets_dir, exist_ok=True)
+    body = "console.log('hello');\n" * 500
+    with open(asset_path, "w") as f:
+        f.write(body)
+
+    yield TestClient(mod.app), body
+
+    os.remove(asset_path)
+    if created_assets_dir:
+        os.rmdir(assets_dir)
+
+
+def test_large_response_is_gzipped_when_client_accepts_it(prod_client):
+    client, body = prod_client
+    resp = client.get("/assets/index-test123.js", headers={"Accept-Encoding": "gzip"})
+    assert resp.status_code == 200
+    assert resp.headers["content-encoding"] == "gzip"
+    assert int(resp.headers["content-length"]) < len(body)
+    assert resp.text == body  # client transparently decompresses
+
+
+def test_response_is_not_gzipped_without_accept_encoding(prod_client):
+    client, body = prod_client
+    resp = client.get("/assets/index-test123.js", headers={"Accept-Encoding": "identity"})
+    assert "content-encoding" not in resp.headers
+    assert resp.text == body
+
+
+def test_hashed_assets_are_cached_immutably(prod_client):
+    client, _ = prod_client
+    resp = client.get("/assets/index-test123.js")
+    assert resp.headers["cache-control"] == "public, max-age=31536000, immutable"
+
+
+def test_missing_asset_404_is_not_cached(prod_client):
+    client, _ = prod_client
+    resp = client.get("/assets/does-not-exist.js")
+    assert resp.status_code == 404
+    assert "immutable" not in resp.headers.get("cache-control", "")
+
+
+def test_index_html_stays_no_store(prod_client):
+    client, _ = prod_client
+    resp = client.get("/")
+    assert resp.status_code == 200
+    assert resp.headers["cache-control"] == "no-cache, no-store, must-revalidate"
+
+
+def test_non_asset_static_files_are_not_marked_immutable(prod_client, dist_dir):
+    client, _ = prod_client
+    favicon = os.path.join(dist_dir, "favicon-test.svg")
+    with open(favicon, "w") as f:
+        f.write("<svg/>")
+    try:
+        resp = client.get("/favicon-test.svg")
+        assert resp.status_code == 200
+        assert "immutable" not in resp.headers.get("cache-control", "")
+    finally:
+        os.remove(favicon)
+
+
+def test_custom_404_page_for_a_missing_asset_is_not_cached_immutably(prod_client, dist_dir):
+    # With html=True, a 404.html in the build is returned as a normal response
+    # with status 404 (instead of Starlette raising), which is the case the
+    # status check in HashedAssetStaticFiles exists for.
+    client, _ = prod_client
+    not_found_page = os.path.join(dist_dir, "404.html")
+    with open(not_found_page, "w") as f:
+        f.write("<html>missing</html>")
+    try:
+        resp = client.get("/assets/does-not-exist.js")
+        assert resp.status_code == 404
+        assert "missing" in resp.text
+        assert "immutable" not in resp.headers.get("cache-control", "")
+    finally:
+        os.remove(not_found_page)
