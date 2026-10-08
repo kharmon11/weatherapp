@@ -14,11 +14,6 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^7.0.0",
-    "@fortawesome/free-brands-svg-icons": "^7.0.0",
-    "@fortawesome/free-regular-svg-icons": "^7.0.0",
-    "@fortawesome/free-solid-svg-icons": "^7.0.0",
-    "@fortawesome/react-fontawesome": "^0.2.3",
     "@vis.gl/react-google-maps": "^1.5.4",
     "axios": "^1.16.1",
     "react": "^19.1.0",
