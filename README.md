@@ -120,8 +120,6 @@ The frontend will be available at `http://localhost:5173`
     │   ├── main.py
     │   ├── models
     │   └── services
-    ├── app.yaml
-    ├── app.yaml.template
     ├── Dockerfile
     ├── pytest.ini
     ├── requirements-dev.txt
@@ -189,7 +187,7 @@ GOOGLE_MAPS_GEOCODING_KEY=your_google_maps_api_key
 
 ## 🚀 Deployment
 
-The application is served from Google Cloud Run and deploys automatically via a GitHub Actions pipeline — merging a pull request into `master` is the only step involved. The pipeline builds a container image, deploys it as a no-traffic Cloud Run revision, runs an automated smoke test against it, and only then shifts live traffic to it; a failed smoke test leaves production untouched. (An App Engine deploy job still runs alongside it as a temporary fallback until that service is retired.)
+The application is served from Google Cloud Run and deploys automatically via a GitHub Actions pipeline — merging a pull request into `master` is the only step involved. The pipeline builds a container image, deploys it as a no-traffic Cloud Run revision, runs an automated smoke test against it, and only then shifts live traffic to it; a failed smoke test leaves production untouched.
 
 See [`DEPLOYMENT.md`](DEPLOYMENT.md) for the full pipeline walkthrough, required configuration, and rollback procedure.
 

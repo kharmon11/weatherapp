@@ -1,5 +1,5 @@
-# DRAFT for the Cloud Run migration. Build from the REPO ROOT so both client/
-# and server/ are in the build context:
+# Container image for the Cloud Run deployment. Build from the REPO ROOT so both
+# client/ and server/ are in the build context:
 #   docker build -f server/Dockerfile \
 #     --build-arg VITE_GOOGLE_MAPS_JAVASCRIPT_KEY=... \
 #     --build-arg VITE_GOOGLE_MAPS_MAP_ID=... \
