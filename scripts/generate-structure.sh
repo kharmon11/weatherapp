@@ -11,7 +11,7 @@ STRUCTURE_CONTENT=$(mktemp) || { echo "❌ Failed to create temporary file"; exi
 
 # Configuration
 MAX_DEPTH=3
-EXCLUDE_DIRS="node_modules|venv|__pycache__|.git|.idea|dist|.sass-cache|build|coverage|assets|*.egg-info"
+EXCLUDE_DIRS="node_modules|venv|__pycache__|.git|.idea|dist|.sass-cache|build|coverage|assets|local|*.egg-info"
 
 # Generate structure block
 echo '```text' > "$STRUCTURE_CONTENT"
