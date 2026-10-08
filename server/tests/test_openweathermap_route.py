@@ -12,7 +12,7 @@ def test_happy_path_assembles_response_shape(client, monkeypatch):
             "lat": 40.7128,
             "lon": -74.0060,
             "lat_string": "40.71 °N",
-            "lon_string": "-74.01 °E",
+            "lon_string": "74.01 °W",
         }
     )
     weather_mock = AsyncMock(return_value={"current": {"temp": 72}})
@@ -27,7 +27,7 @@ def test_happy_path_assembles_response_shape(client, monkeypatch):
         "data": {"current": {"temp": 72}},
         "location_text": "New York, NY, US",
         "lat_string": "40.71 °N",
-        "lon_string": "-74.01 °E",
+        "lon_string": "74.01 °W",
     }
     geocode_mock.assert_awaited_once_with("New York, NY")
     weather_mock.assert_awaited_once_with(40.7128, -74.0060)
@@ -38,11 +38,11 @@ def test_geocode_string_input_passed_through_unchanged(client, monkeypatch):
     # not - the route does no pre-parsing or branching on its shape.
     geocode_mock = AsyncMock(
         return_value={
-            "location_text": "40.71 °N, -74.01 °E",
+            "location_text": "40.71 °N, 74.01 °W",
             "lat": 40.7128,
             "lon": -74.0060,
             "lat_string": "40.71 °N",
-            "lon_string": "-74.01 °E",
+            "lon_string": "74.01 °W",
         }
     )
     weather_mock = AsyncMock(return_value={"current": {"temp": 72}})
@@ -79,7 +79,7 @@ def test_weather_error_propagates(client, monkeypatch):
             "lat": 40.7128,
             "lon": -74.0060,
             "lat_string": "40.71 °N",
-            "lon_string": "-74.01 °E",
+            "lon_string": "74.01 °W",
         }
     )
     weather_mock = AsyncMock(

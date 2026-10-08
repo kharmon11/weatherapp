@@ -11,8 +11,8 @@ const mockWeatherService = vi.mocked(weatherService)
 
 const fakeWeather = {
     location_text: "Boston, MA",
-    lat_string: "42.35",
-    lon_string: "-71.06",
+    lat_string: "42.35 °N",
+    lon_string: "71.06 °W",
     data: {lat: 42.35, lon: -71.06, timezone: "America/New_York", timezone_offset: -14400}
 } as unknown as OpenWeatherMapResponse
 

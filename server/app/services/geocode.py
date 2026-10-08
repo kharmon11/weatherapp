@@ -6,6 +6,11 @@ from ..core.config import settings
 logger = logging.getLogger(__name__)
 
 
+def _format_coordinate(value: float, positive: str, negative: str) -> str:
+    """Format a coordinate as an unsigned magnitude plus hemisphere, e.g. '71.06 \u00B0W'."""
+    return f"{abs(round(value, 2))} \u00B0{positive if value >= 0 else negative}"
+
+
 async def geocode(address: str) -> dict:
     base_url = "https://maps.googleapis.com/maps/api/geocode/json?"
     params = {
@@ -22,9 +27,9 @@ async def geocode(address: str) -> dict:
         if status == "OK":
             # Get latitude and longitude values
             lat = data["results"][0]["geometry"]["location"]["lat"]
-            lat_string = str(round(lat, 2)) + " \u00B0N" if lat >= 0 else str(round(lat, 2)) + " \u00B0S"
+            lat_string = _format_coordinate(lat, "N", "S")
             lon = data["results"][0]["geometry"]["location"]["lng"]
-            lon_string = str(round(lon, 2)) + " \u00B0E" if lat >= 0 else str(round(lon, 2)) + " \u00B0W"
+            lon_string = _format_coordinate(lon, "E", "W")
 
             # Build location_text with form: city, state, country
             for component in data["results"][0]["address_components"]:

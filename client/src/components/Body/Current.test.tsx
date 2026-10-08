@@ -45,7 +45,7 @@ const baseProps = {
     lat: 42.35,
     lon: -71.06,
     lat_string: "42.35 °N",
-    lon_string: "-71.06 °E",
+    lon_string: "71.06 °W",
     handleMapClick: vi.fn(),
     googleMapError: false
 }
@@ -122,7 +122,7 @@ describe("Current", () => {
     it("shows the coordinates and toggles the map error message", () => {
         const {container, rerender} = render(<Current current={makeCurrent()} {...baseProps}/>)
 
-        expect(container.querySelector(".coordinates")?.textContent).toBe("lat: 42.35 °N, lon: -71.06 °E")
+        expect(container.querySelector(".coordinates")?.textContent).toBe("lat: 42.35 °N, lon: 71.06 °W")
         expect(container.querySelector(".google-map-error")?.className).not.toContain("visible")
 
         rerender(<Current current={makeCurrent()} {...baseProps} googleMapError={true}/>)

@@ -105,3 +105,27 @@ async def test_geocode_other_error_status_raises_500():
 
     assert exc_info.value.status_code == 500
     assert exc_info.value.detail["error_type"] == "geocoding"
+
+
+@pytest.mark.parametrize(
+    "lat, lng, expected_lat, expected_lon",
+    [
+        (42.3601, -71.0589, "42.36 °N", "71.06 °W"),  # Boston: N / W
+        (-33.8688, 151.2093, "33.87 °S", "151.21 °E"),  # Sydney: S / E
+        (-34.6037, -58.3816, "34.6 °S", "58.38 °W"),  # Buenos Aires: S / W
+        (51.5074, -0.1278, "51.51 °N", "0.13 °W"),  # London: N / W
+        (0.0, 0.0, "0.0 °N", "0.0 °E"),  # origin
+    ],
+)
+@respx.mock
+async def test_geocode_coordinate_strings_use_each_axis_own_hemisphere(
+    lat, lng, expected_lat, expected_lon
+):
+    body = _ok_response(FULL_COMPONENTS)
+    body["results"][0]["geometry"]["location"] = {"lat": lat, "lng": lng}
+    respx.get(GEOCODE_URL).mock(return_value=httpx.Response(200, json=body))
+
+    result = await geocode("anywhere")
+
+    assert result["lat_string"] == expected_lat
+    assert result["lon_string"] == expected_lon
