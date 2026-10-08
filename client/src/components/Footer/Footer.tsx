@@ -1,6 +1,6 @@
 import "./Footer.sass"
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import Logo from "../common/Logo"
+import GithubIcon from "../common/GithubIcon"
 
 export default function Footer() {
   return (
@@ -14,8 +14,8 @@ export default function Footer() {
         <div>© {new Date().getFullYear()} Ken Harmon. All rights reserved.</div>
       </div>
       <div>
-        <a href={"https://github.com/kharmon11/weatherapp"}>
-          <FontAwesomeIcon icon={['fab', 'github']} size={"3x"} color={"#ddd"}/>
+        <a href={"https://github.com/kharmon11/weatherapp"} aria-label={"WeatherApp on GitHub"}>
+          <GithubIcon size={38} color={"#ddd"}/>
         </a>
       </div>
     </footer>

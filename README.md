@@ -89,12 +89,10 @@ The frontend will be available at `http://localhost:5173`
 │   ├── scripts
 │   │   └── smoke-test.mjs
 │   ├── src
-│   │   ├── App.css
 │   │   ├── App.sass
 │   │   ├── App.tsx
 │   │   ├── components
 │   │   ├── hooks
-│   │   ├── index.css
 │   │   ├── index.sass
 │   │   ├── main.tsx
 │   │   ├── services
@@ -131,6 +129,7 @@ The frontend will be available at `http://localhost:5173`
     └── tests
         ├── __init__.py
         ├── conftest.py
+        ├── test_cache.py
         ├── test_config.py
         ├── test_geocode_service.py
         ├── test_main.py

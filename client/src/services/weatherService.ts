@@ -5,15 +5,30 @@ import axios from "axios";
 // "undefined" ending up in the request URL if this is ever truly undefined.
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
-const weatherService = async (location: string) => {
+// The backend's worst case (3 attempts x 15s timeouts plus backoff) is ~51s;
+// give up well before that so a hung request shows an error instead of an
+// endless spinner. Axios reports a timeout as code "ECONNABORTED".
+const REQUEST_TIMEOUT_MS = 30000;
+
+const weatherService = async (location: string, signal?: AbortSignal) => {
     try {
-        const res = await axios.get(`${API_BASE_URL}/api/openweathermap`, { params: { location } })
+        const res = await axios.get(`${API_BASE_URL}/api/openweathermap`, {
+            params: { location },
+            signal,
+            timeout: REQUEST_TIMEOUT_MS
+        })
         if (import.meta.env.MODE === "development") {
             console.log(res.data)
         }
         return res.data
     } catch (err) {
-        console.log(err)
+        if (axios.isCancel(err)) {
+            // Superseded by a newer request (see useWeather); not a user-facing error.
+            throw {
+                error_type: "canceled",
+                message: "Request canceled"
+            }
+        }
         if (axios.isAxiosError(err)) {
             console.error(err)
             if (err.response) {

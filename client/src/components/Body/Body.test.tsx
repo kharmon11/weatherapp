@@ -1,24 +1,28 @@
 import {describe, it, expect, vi, beforeEach} from "vitest"
-import {render, screen} from "@testing-library/react"
+import {render, screen, waitFor} from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import Body from "./Body"
 import useWeather from "../../hooks/useWeather.tsx"
 import type {OpenWeatherMapResponse} from "../../types/openweathermap.ts"
 
 vi.mock("../../hooks/useWeather.tsx")
-vi.mock("./Current", () => ({
-    default: () => <div data-testid="current-mock"/>
-}))
-vi.mock("./WeekForecast/WeekForecast.tsx", () => ({
-    default: () => <div data-testid="week-forecast-mock"/>
-}))
+// Factories run when a module is first imported, so these count chunk loads.
+const chunkLoads = vi.hoisted(() => ({current: 0, weekForecast: 0}))
+vi.mock("./Current", () => {
+    chunkLoads.current++
+    return {default: () => <div data-testid="current-mock"/>}
+})
+vi.mock("./WeekForecast/WeekForecast.tsx", () => {
+    chunkLoads.weekForecast++
+    return {default: () => <div data-testid="week-forecast-mock"/>}
+})
 
 const mockUseWeather = vi.mocked(useWeather)
 
 const fakeWeather = {
     location_text: "Boston, MA",
-    lat_string: "42.35",
-    lon_string: "-71.06",
+    lat_string: "42.35 °N",
+    lon_string: "71.06 °W",
     data: {lat: 42.35, lon: -71.06, timezone: "America/New_York", timezone_offset: -14400, current: {}, daily: []}
 } as unknown as OpenWeatherMapResponse
 
@@ -43,6 +47,17 @@ describe("Body", () => {
 
         expect(document.querySelector(".spinner-wrapper")).not.toBeInTheDocument()
         expect(screen.queryByTestId("current-mock")).not.toBeInTheDocument()
+        expect(chunkLoads).toEqual({current: 0, weekForecast: 0}) // nothing is fetched before a search
+    })
+
+    it("starts loading the result components as soon as a request begins", async () => {
+        // Must run before any test that renders weather: once imported, a
+        // module stays loaded for the rest of this file.
+        mockUseWeather.mockReturnValue({...baseHookReturn, isLoading: true})
+        render(<Body/>)
+
+        await waitFor(() => expect(chunkLoads).toEqual({current: 1, weekForecast: 1}))
+        expect(screen.queryByTestId("current-mock")).not.toBeInTheDocument() // still no weather to show
     })
 
     it("shows the spinner while loading and hides weather output", () => {

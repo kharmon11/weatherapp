@@ -9,4 +9,11 @@ describe("Footer", () => {
         const year = new Date().getFullYear()
         expect(screen.getByText(`© ${year} Ken Harmon. All rights reserved.`)).toBeInTheDocument()
     })
+
+    it("links to the GitHub repository with an accessible name", () => {
+        render(<Footer/>)
+
+        expect(screen.getByRole("link", {name: "WeatherApp on GitHub"}))
+            .toHaveAttribute("href", "https://github.com/kharmon11/weatherapp")
+    })
 })
