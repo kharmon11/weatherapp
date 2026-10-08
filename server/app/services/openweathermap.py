@@ -41,13 +41,17 @@ async def _fetch(client: httpx.AsyncClient, url: str, params: dict, retries: int
             return resp.json()
         except (httpx.ConnectTimeout , httpx.ReadTimeout) as e:
             logger.warning(f"Timeout fetching weather data on attempt {attempt}: {e}")
-            await asyncio.sleep(2 * attempt)
+            if attempt < retries:  # no point backing off when there is no next attempt
+                await asyncio.sleep(2 * attempt)
         except httpx.HTTPStatusError as e:
             logger.error(f"HTTP error {e.response.status_code} from OpenWeatherMap: {e.response.text}")
             raise HTTPException(status_code=502, detail="Error fetching weather data from OpenWeatherMap")
         except httpx.RequestError as e:
             logger.error(f"Request error contacting OpenWeatherMap: {e}")
             raise HTTPException(status_code=502, detail="Connection error to OpenWeatherMap")
+        except ValueError:
+            logger.error(f"OpenWeatherMap returned a non-JSON response from {url}")
+            raise HTTPException(status_code=502, detail="Invalid response from OpenWeatherMap")
 
     logger.error(f"Failed to fetch weather data from {url} after {retries} attempts")
     raise HTTPException(status_code=504, detail="Timeout fetching weather data from OpenWeatherMap")
@@ -64,11 +68,19 @@ async def get_openweathermap_data(latitude: float, longitude: float, retries: in
 
     limits = httpx.Limits(max_keepalive_connections=0)
     async with httpx.AsyncClient(timeout=timeout, http2=False, limits=limits) as client:
-        current_response, minutely_response, daily_response = await asyncio.gather(
-            _fetch_cached(client, CURRENT_URL, params, retries),
-            _fetch_cached(client, MINUTELY_URL, params, retries),
-            _fetch_cached(client, DAILY_URL, params, retries),
-        )
+        tasks = [
+            asyncio.create_task(_fetch_cached(client, url, params, retries))
+            for url in (CURRENT_URL, MINUTELY_URL, DAILY_URL)
+        ]
+        try:
+            current_response, minutely_response, daily_response = await asyncio.gather(*tasks)
+        except BaseException:
+            # gather() leaves the other calls running when one fails, and they
+            # would keep retrying against a client that is about to be closed.
+            for task in tasks:
+                task.cancel()
+            await asyncio.gather(*tasks, return_exceptions=True)
+            raise
 
     return {
         "lat": current_response["lat"],

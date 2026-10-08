@@ -1,3 +1,5 @@
+import asyncio
+
 import httpx
 import pytest
 import respx
@@ -33,6 +35,9 @@ DAILY_PAYLOAD = {
     "timezone_offset": -14400,
     "data": [{"dt": 1700000000, "temp": {"min": 60, "max": 80}, "wind_speed": 5}],
 }
+
+
+_REAL_SLEEP = asyncio.sleep
 
 
 @pytest.fixture(autouse=True)
@@ -190,3 +195,65 @@ async def test_failed_lookup_is_not_cached():
 
     result = await get_openweathermap_data(40.7128, -74.0060)  # retried upstream, now succeeds
     assert result["current"] == CURRENT_PAYLOAD["data"][0]
+
+
+@respx.mock
+async def test_no_backoff_sleep_after_the_final_failed_attempt(monkeypatch):
+    sleeps = []
+
+    async def record_sleep(seconds):
+        sleeps.append(seconds)
+
+    monkeypatch.setattr(owm_module.asyncio, "sleep", record_sleep)
+    respx.get(CURRENT_URL).mock(side_effect=httpx.ReadTimeout("timed out"))
+    respx.get(MINUTELY_URL).mock(return_value=httpx.Response(200, json=MINUTELY_PAYLOAD))
+    respx.get(DAILY_URL).mock(return_value=httpx.Response(200, json=DAILY_PAYLOAD))
+
+    with pytest.raises(HTTPException) as exc_info:
+        await get_openweathermap_data(40.7128, -74.0060, retries=3)
+
+    assert exc_info.value.status_code == 504
+    assert sleeps == [2, 4]  # between attempts 1-2 and 2-3, none after attempt 3
+
+
+@respx.mock
+async def test_failure_cancels_the_other_in_flight_calls(monkeypatch):
+    started = asyncio.Event()
+    cancelled = []
+
+    async def slow_response(request):
+        started.set()
+        try:
+            await asyncio.sleep(30)
+        except asyncio.CancelledError:
+            cancelled.append(str(request.url.path))
+            raise
+        return httpx.Response(200, json=MINUTELY_PAYLOAD)
+
+    respx.get(CURRENT_URL).mock(return_value=httpx.Response(502))
+    respx.get(MINUTELY_URL).mock(side_effect=slow_response)
+    respx.get(DAILY_URL).mock(side_effect=slow_response)
+    # The no_sleep fixture patches asyncio.sleep module-wide (it is the same
+    # module object), so restore the real one for this test.
+    monkeypatch.setattr(owm_module.asyncio, "sleep", _REAL_SLEEP)
+
+    with pytest.raises(HTTPException) as exc_info:
+        await get_openweathermap_data(40.7128, -74.0060)
+
+    assert exc_info.value.status_code == 502
+    assert sorted(cancelled) == [
+        "/data/4.0/onecall/timeline/1day",
+        "/data/4.0/onecall/timeline/1min",
+    ]
+
+
+@respx.mock
+async def test_non_json_upstream_response_returns_502():
+    respx.get(CURRENT_URL).mock(return_value=httpx.Response(200, text="<html>oops</html>"))
+    respx.get(MINUTELY_URL).mock(return_value=httpx.Response(200, json=MINUTELY_PAYLOAD))
+    respx.get(DAILY_URL).mock(return_value=httpx.Response(200, json=DAILY_PAYLOAD))
+
+    with pytest.raises(HTTPException) as exc_info:
+        await get_openweathermap_data(40.7128, -74.0060)
+
+    assert exc_info.value.status_code == 502

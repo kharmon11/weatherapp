@@ -13,6 +13,10 @@ logging.basicConfig(
   format="%(levelname)s: %(asctime)s - %(name)s - %(message)s",
 )
 
+# httpx logs every request URL at INFO, and our Google/OpenWeatherMap URLs carry
+# the API keys as query parameters; keep those lines out of the logs.
+logging.getLogger("httpx").setLevel(logging.WARNING)
+
 app = FastAPI()
 ENV = os.getenv("ENV")
 

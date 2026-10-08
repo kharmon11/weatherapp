@@ -41,8 +41,16 @@ async def geocode(address: str) -> dict:
     }
 
     async with httpx.AsyncClient() as client:
-        resp = await client.get(base_url, params=params)
-        data = resp.json()
+        try:
+            resp = await client.get(base_url, params=params)
+            data = resp.json()
+        except httpx.RequestError as err:
+            # Log only the exception type: it must never carry the request URL (API key).
+            logger.error(f"Geocoding request failed for '{address}': {type(err).__name__}")
+            raise HTTPException(status_code=502, detail={"error_type": "geocoding", "message": "Geocoding service unavailable"})
+        except ValueError:
+            logger.error(f"Geocoding API returned a non-JSON response for '{address}'")
+            raise HTTPException(status_code=502, detail={"error_type": "geocoding", "message": "Invalid response from geocoding service"})
 
         status = data.get("status")
 
@@ -75,5 +83,5 @@ async def geocode(address: str) -> dict:
             logger.warning(f"Geocoding Error: ZERO_RESULTS for '{address}'")
             raise HTTPException(status_code=404, detail={"error_type": "geocoding", "message": "No results for that location"})
         else:
-            logger.error(f"Geocoding API error for location '{address}': status={status}, response={data}")
+            logger.error(f"Geocoding API error for location '{address}': status={status}, error_message={data.get('error_message')}")
             raise HTTPException(status_code=500, detail={"error_type": "geocoding", "message": "Internal server error"})

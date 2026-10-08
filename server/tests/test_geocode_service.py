@@ -1,3 +1,5 @@
+import logging
+
 import httpx
 import pytest
 import respx
@@ -184,3 +186,57 @@ async def test_geocode_errors_are_not_cached():
 
     assert route.call_count == 2
     assert result["location_text"] == "New York, NY, US"
+
+
+@pytest.mark.parametrize("failure", [httpx.ConnectError("boom"), httpx.ReadTimeout("slow")])
+@respx.mock
+async def test_geocode_network_failure_returns_502_with_error_shape(failure):
+    respx.get(GEOCODE_URL).mock(side_effect=failure)
+
+    with pytest.raises(HTTPException) as exc_info:
+        await geocode("New York, NY")
+
+    assert exc_info.value.status_code == 502
+    assert exc_info.value.detail["error_type"] == "geocoding"
+    assert "message" in exc_info.value.detail
+
+
+@respx.mock
+async def test_geocode_non_json_response_returns_502_with_error_shape():
+    respx.get(GEOCODE_URL).mock(return_value=httpx.Response(502, text="<html>Bad Gateway</html>"))
+
+    with pytest.raises(HTTPException) as exc_info:
+        await geocode("New York, NY")
+
+    assert exc_info.value.status_code == 502
+    assert exc_info.value.detail["error_type"] == "geocoding"
+
+
+@respx.mock
+async def test_geocode_api_error_log_omits_full_response_body(caplog):
+    respx.get(GEOCODE_URL).mock(
+        return_value=httpx.Response(
+            200,
+            json={"status": "REQUEST_DENIED", "error_message": "The provided API key is invalid.",
+                  "results": [{"huge": "payload"}]},
+        )
+    )
+
+    with pytest.raises(HTTPException):
+        await geocode("New York, NY")
+
+    assert "REQUEST_DENIED" in caplog.text
+    assert "The provided API key is invalid." in caplog.text
+    assert "huge" not in caplog.text
+
+
+@respx.mock
+async def test_httpx_request_urls_with_api_keys_are_not_logged(caplog):
+    # httpx logs "HTTP Request: GET <full url>" at INFO, and the url carries the key.
+    caplog.set_level(logging.INFO)
+    respx.get(GEOCODE_URL).mock(return_value=httpx.Response(200, json=_ok_response(FULL_COMPONENTS)))
+
+    await geocode("New York, NY")
+
+    assert "test-google-key" not in caplog.text
+    assert "HTTP Request" not in caplog.text
