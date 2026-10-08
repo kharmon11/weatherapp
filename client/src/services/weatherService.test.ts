@@ -20,8 +20,30 @@ describe("weatherService", () => {
         expect(result).toEqual(data)
         expect(axios.get).toHaveBeenCalledWith(
             expect.stringContaining("/api/openweathermap"),
-            {params: {location: "Boston"}}
+            {params: {location: "Boston"}, signal: undefined, timeout: 30000}
         )
+    })
+
+    it("passes the abort signal through to axios", async () => {
+        vi.mocked(axios.get).mockResolvedValue({data: {}})
+        const controller = new AbortController()
+
+        await weatherService("Boston", controller.signal)
+
+        expect(axios.get).toHaveBeenCalledWith(
+            expect.any(String),
+            expect.objectContaining({signal: controller.signal})
+        )
+    })
+
+    it("reports a canceled request as a canceled error, not a network error", async () => {
+        vi.mocked(axios.get).mockRejectedValue({code: "ERR_CANCELED"})
+        vi.mocked(axios.isCancel).mockReturnValueOnce(true)
+
+        await expect(weatherService("Boston")).rejects.toEqual({
+            error_type: "canceled",
+            message: "Request canceled"
+        })
     })
 
     it("throws a not-found error for a 404 response", async () => {
